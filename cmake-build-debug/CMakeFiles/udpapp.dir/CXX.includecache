@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/barab/CLionProjects/udpapp/main.cpp
+stdafx.h
+C:/Users/barab/CLionProjects/udpapp/stdafx.h
+winsock2.h
+-
+ws2tcpip.h
+C:/Users/barab/CLionProjects/udpapp/ws2tcpip.h
+
+C:/Users/barab/CLionProjects/udpapp/stdafx.h
+targetver.h
+C:/Users/barab/CLionProjects/udpapp/targetver.h
+stdio.h
+-
+tchar.h
+-
+
+C:/Users/barab/CLionProjects/udpapp/targetver.h
+sdkddkver.h
+-
+

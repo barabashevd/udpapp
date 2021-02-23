@@ -1,0 +1,3 @@
+C:/Users/barab/CLionProjects/udpapp/cmake-build-debug/CMakeFiles/udpapp.dir
+C:/Users/barab/CLionProjects/udpapp/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/barab/CLionProjects/udpapp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
