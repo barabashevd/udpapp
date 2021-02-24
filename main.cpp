@@ -16,50 +16,27 @@
 #include "stdafx.h"
 #include <winsock2.h>
 #include "ws2tcpip.h"
+#include <string>
 
-#define TARGET_IP "127.0.0.1"
+#define TARGET_IP "192.168.30.23"
+#define SENDER_PORT 8888
+#define RECEIVER_PORT 5555
 
-#define BUFFERS_LEN 1024
+#define BUFFERS_LEN 1024 - 42
+
 #define NAME "NAME="
 #define SIZE "SIZE="
+#define START "START"
+#define DATA "DATA="
+#define STOP "STOP"
 
+void clear_buffer(char *b, int len);
 
-void init_win_socket() {
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
-}
+void init_win_socket();
 
-void clear_buffer(char *b, int len) {
-    for (int i = 0; i < len; i++) {
-        b[i] = '\0';
-    }
-}
+int get_filesize(FILE *file);
 
-int send_file(FILE *fp, char *buf, int s) {
-    char ch, ch2;
-    for (int i = 0; i < s; i++) {
-        ch = fgetc(fp);
-        buf[i] = ch;
-        if (ch == EOF)
-            return 1;
-    }
-    return 0;
-}
-
-int recieve_file(char *buf, int s, FILE *file) {
-    int i;
-    char ch;
-    for (i = 0; i < s; i++) {
-        ch = buf[i];
-        if (ch == EOF) {
-            fwrite(&ch, sizeof(char), 1, file);
-            return 1;
-        } else {
-            fwrite(&ch, sizeof(char), 1, file);
-        }
-    }
-    return 0;
-}
+int write_file(char *buf, int s, FILE *file);
 
 int main(int argc, char *argv[]) {
     bool sender = argc > 1 && strcmp(argv[1], "-s") == 0;
@@ -68,12 +45,12 @@ int main(int argc, char *argv[]) {
 
     if (sender) {
         printf("App in sender mode.\n");
-        target_port = 5555;
-        local_port = 8888;
+        target_port = RECEIVER_PORT;
+        local_port = SENDER_PORT;
     } else {
         printf("App in receiver mode.\n");
-        target_port = 8888;
-        local_port = 5555;
+        target_port = SENDER_PORT;
+        local_port = RECEIVER_PORT;
     }
 
     SOCKET socketS;
@@ -90,79 +67,190 @@ int main(int argc, char *argv[]) {
 
     socketS = socket(AF_INET, SOCK_DGRAM, 0);
 
+    // Binds a socket to a port, fails if the port is in use
     if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
         printf("Binding error!\n");
-        getchar(); //wait for press Enter
         return 1;
     }
 
-
     if (sender) {
         char buffer_tx[BUFFERS_LEN];
-        clear_buffer(buffer_tx, BUFFERS_LEN);
-        FILE *file = fopen(filename, "r");
+
+        FILE *file = fopen(filename, "rb");
+        int file_size = get_filesize(file);
 
         sockaddr_in addrDest{};
         addrDest.sin_family = AF_INET;
         addrDest.sin_port = htons(target_port);
         InetPton(AF_INET, _T(TARGET_IP), &addrDest.sin_addr.s_addr);
 
-        strncpy(buffer_tx, filename, BUFFERS_LEN);
+        // Sends filename in "NAME=filename" format
+        clear_buffer(buffer_tx, BUFFERS_LEN);
+        strcpy(buffer_tx, NAME);
+        strcat(buffer_tx, filename);
         sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         printf("Filename sent.\n");
 
-        while (true) {
+        // Sends filesize in "SIZE=[bytes]" format
+        clear_buffer(buffer_tx, BUFFERS_LEN);
+        strcpy(buffer_tx, SIZE);
+        // Tohle jsou celkem kouzla, nejdriv to prevede v c++ do std::string pomoci <string> a pak do C stringu
+        strcat(buffer_tx, std::to_string(file_size).c_str());
+        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        printf("Filesize sent, it is: %i\n", file_size);
 
-            if (send_file(file, buffer_tx, BUFFERS_LEN)) {
-                sendto(socketS, buffer_tx, strlen(buffer_tx),
-                       0,
-                       (struct sockaddr *) &addrDest, sizeof(addrDest));
-                break;
-            }
+        // Sends start flag
+        clear_buffer(buffer_tx, BUFFERS_LEN);
+        strcpy(buffer_tx, START);
+        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        printf("Start flag sent.\n");
 
-            sendto(socketS, buffer_tx, strlen(buffer_tx),
-                   0,
-                   (struct sockaddr *) &addrDest, sizeof(addrDest));
+        int read;
+        while (!feof(file)) {
             clear_buffer(buffer_tx, BUFFERS_LEN);
+            strcpy(buffer_tx, DATA);
+            for (int i = sizeof(DATA) - 1; i < BUFFERS_LEN; i++) {
+                if (!feof(file)) {
+                    *(buffer_tx + i) = fgetc(file);
+                } else {
+                    printf("End of file reached.\n");
+                    break;
+                }
+            }
+            sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
         }
-        if (file != nullptr)
-            fclose(file);
 
-        closesocket(socketS);
+        // Sends stop flag
+        clear_buffer(buffer_tx, BUFFERS_LEN);
+        strcpy(buffer_tx, STOP);
+        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        printf("Stop flag sent.\n");
+
+        if (file != nullptr) {
+            fclose(file);
+        }
+
     } else {
         char buffer_rx[BUFFERS_LEN];
-        clear_buffer(buffer_rx, BUFFERS_LEN);
 
+
+        FILE *output;
+
+        clear_buffer(buffer_rx, BUFFERS_LEN);
         printf("Waiting for filename...\n");
 
         int wait = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                             0, (struct sockaddr *) &from,
                             &from_len);
 
-        FILE *output;
+        if (wait != SOCKET_ERROR && strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
+            char *prefix = strtok(buffer_rx, "=");
+            const char *fname = strtok(NULL, "=");
+            output = fopen(fname, "wb");
+            printf("Filename: %s\n", fname);
 
-        if (wait != SOCKET_ERROR) {
-            output = fopen("output.txt", "w");
+
+        } else {
+            printf("Socket error.\n");
+            return 1;
+        }
+        // -------------------------------------------------------------
+        clear_buffer(buffer_rx, BUFFERS_LEN);
+        printf("Waiting for file size...\n");
+
+        int rec_size = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
+                                0, (struct sockaddr *) &from,
+                                &from_len);
+
+
+        int integer_fsize;
+        if (rec_size != SOCKET_ERROR && strncmp(buffer_rx, SIZE, sizeof(SIZE) - 1) == 0) {
+            char *prefix = strtok(buffer_rx, "=");
+            const char *fsize = strtok(nullptr, "=");
+
+            std::string str_fsize = std::string(fsize);
+            integer_fsize = (int) std::strtol(str_fsize.c_str(), nullptr, 10);
+            if (integer_fsize == 0) {
+                printf("Error: cannot convert size!\n");
+            }
+
+            printf("File size: %d\n", integer_fsize);
+        } else {
+            printf("Socket error.\n");
+            return 1;
+        }
+        // -----------------------------------------------------------------
+        clear_buffer(buffer_rx, BUFFERS_LEN);
+        printf("Waiting for start flag...\n");
+
+        int rec_start = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
+                                 0, (struct sockaddr *) &from,
+                                 &from_len);
+
+        if (rec_start != SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
+            printf("Received flag: %s\n", buffer_rx);
+            printf("Start flag received - ready for data\n");
         } else {
             printf("Socket error.\n");
             return 1;
         }
 
-
+        // -----------------------------------------------------------------
         while (true) {
             clear_buffer(buffer_rx, BUFFERS_LEN);
             int rec = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                                0, (struct sockaddr *) &from,
                                &from_len);
 
-            if (recieve_file(buffer_rx, BUFFERS_LEN, output) || rec == SOCKET_ERROR) {
+            if (rec == SOCKET_ERROR) {
+                printf("Socket error!\n");
                 break;
             }
-        }
 
+            if (strncmp(buffer_rx, STOP, sizeof(STOP) - 1) == 0) {
+                printf("Stop flag received!\n");
+                break;
+            }
+
+            int packet_size = integer_fsize > BUFFERS_LEN ? BUFFERS_LEN : integer_fsize;
+            write_file(buffer_rx, packet_size, output);
+            integer_fsize = integer_fsize - packet_size + 5;
+        }
         fclose(output);
-        closesocket(socketS);
     }
+    closesocket(socketS);
     printf("Sending done...\n");
+
     return 0;
 }
+
+void clear_buffer(char *b, int len) {
+    for (int i = 0; i < len; i++) {
+        b[i] = '\0';
+    }
+}
+
+void init_win_socket() {
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+}
+
+int get_filesize(FILE *file) {
+    fseek(file, 0L, SEEK_END);
+    int size = ftell(file);
+    fseek(file, 0L, SEEK_SET);
+    return size;
+}
+
+int write_file(char *buf, int s, FILE *file) {
+    if (strncmp(buf, DATA, sizeof(DATA) - 1) == 0) {
+        for (int i = sizeof(DATA) - 1; i < s; i++) {
+            // fwrite(buf + i, sizeof(char), 1, file);
+            fputc(*(buf + i), file);
+        }
+    } else {
+        printf("Error: invalid structure!\n");
+    }
+    return 0;
+}
+
