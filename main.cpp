@@ -3,12 +3,20 @@
 /*
  * NAME=file.txt
  * SIZE=1152
- * STRT
+ * START
  * DATA{4B pozice v souboru, binárně (uint32_t)}{data 1B až PACKET_MAX_LEN - 4}
  * DATA{4B pozice v souboru, binárně (uint32_t)}{data 1B až PACKET_MAX_LEN - 4}
  * DATA{4B pozice v souboru, binárně (uint32_t)}{data 1B až PACKET_MAX_LEN - 4}
  * ...
  * STOP
+ */
+
+/*
+ * set timeout in msec for socketS
+ * WINDOWS: Timeout value is a DWORD in milliseconds, address passed to setsockopt() is const char *
+ * LINUX : Timeout value is a struct timeval, address passed to setsockopt() is const void *
+ * DWORD read_timeout = 10000;
+ * setsockopt(socketS, SOL_SOCKET, SO_RCVTIMEO,(char*)&read_timeout, sizeof read_timeout);
  */
 
 #pragma comment(lib, "ws2_32.lib")
@@ -18,7 +26,7 @@
 #include "ws2tcpip.h"
 #include <string>
 
-#define TARGET_IP "192.168.30.23"
+// #define TARGET_IP "192.168.30.50"
 #define SENDER_PORT 8888
 #define RECEIVER_PORT 5555
 
@@ -30,6 +38,10 @@
 #define DATA "DATA="
 #define STOP "STOP"
 
+#define SENDER_FLAG "-s"
+#define IP_FLAG "-ip"
+#define FILENAME_FLAG "-f"
+
 void clear_buffer(char *b, int len);
 
 void init_win_socket();
@@ -39,15 +51,29 @@ int get_filesize(FILE *file);
 int write_file(char *buf, int s, FILE *file);
 
 int main(int argc, char *argv[]) {
-    bool sender = argc > 1 && strcmp(argv[1], "-s") == 0;
-    char *filename = argc > 2 ? argv[2] : nullptr;
+    bool sender = false;
+    char *filename = nullptr;
+    char *target_ip = nullptr;
     int target_port, local_port;
 
-    if (sender) {
-        printf("App in sender mode.\n");
-        target_port = RECEIVER_PORT;
-        local_port = SENDER_PORT;
-    } else {
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], SENDER_FLAG) == 0) {
+            printf("App in sender mode.\n");
+            sender = true;
+            target_port = RECEIVER_PORT;
+            local_port = SENDER_PORT;
+        }
+        if (strcmp(argv[i], IP_FLAG) == 0) {
+            target_ip = argv[++i];
+            printf("Target IP is: %s\n", target_ip);
+        }
+        if (strcmp(argv[i], FILENAME_FLAG) == 0) {
+            filename = argv[++i];
+            printf("File to load: %s\n", filename);
+        }
+    }
+
+    if (!sender) {
         printf("App in receiver mode.\n");
         target_port = SENDER_PORT;
         local_port = RECEIVER_PORT;
@@ -82,7 +108,7 @@ int main(int argc, char *argv[]) {
         sockaddr_in addrDest{};
         addrDest.sin_family = AF_INET;
         addrDest.sin_port = htons(target_port);
-        InetPton(AF_INET, _T(TARGET_IP), &addrDest.sin_addr.s_addr);
+        InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
         // Sends filename in "NAME=filename" format
         clear_buffer(buffer_tx, BUFFERS_LEN);
@@ -90,6 +116,7 @@ int main(int argc, char *argv[]) {
         strcat(buffer_tx, filename);
         sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         printf("Filename sent.\n");
+
 
         // Sends filesize in "SIZE=[bytes]" format
         clear_buffer(buffer_tx, BUFFERS_LEN);
