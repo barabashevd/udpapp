@@ -26,7 +26,8 @@
 #include "ws2tcpip.h"
 #include <string>
 
-// #define TARGET_IP "192.168.30.50"
+#include "crc.h"
+
 #define SENDER_PORT 8888
 #define RECEIVER_PORT 5555
 
@@ -38,16 +39,16 @@
 #define DATA "DATA="
 #define STOP "STOP"
 
+#define SUM "SUM="
+#define CRC "CRC="
+
 #define SENDER_FLAG "-s"
 #define IP_FLAG "-ip"
 #define FILENAME_FLAG "-f"
 
 void clear_buffer(char *b, int len);
-
 void init_win_socket();
-
 int get_filesize(FILE *file);
-
 int write_file(char *buf, int s, FILE *file);
 
 int main(int argc, char *argv[]) {
@@ -92,6 +93,7 @@ int main(int argc, char *argv[]) {
     local.sin_addr.s_addr = INADDR_ANY;
 
     socketS = socket(AF_INET, SOCK_DGRAM, 0);
+
 
     // Binds a socket to a port, fails if the port is in use
     if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
@@ -144,6 +146,10 @@ int main(int argc, char *argv[]) {
                     break;
                 }
             }
+            // Calculate CRC
+            unsigned char crc = get_crc(buffer_tx, BUFFERS_LEN, 0xffff, 0);
+            printf("CRC: %i\n", crc);
+
             sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
         }
 
@@ -280,4 +286,3 @@ int write_file(char *buf, int s, FILE *file) {
     }
     return 0;
 }
-

@@ -127,6 +127,33 @@ udpapp\fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\build
 .PHONY : udpapp\fast
 
+crc.obj: crc.cpp.obj
+
+.PHONY : crc.obj
+
+# target to build an object file
+crc.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.obj
+.PHONY : crc.cpp.obj
+
+crc.i: crc.cpp.i
+
+.PHONY : crc.i
+
+# target to preprocess a source file
+crc.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.i
+.PHONY : crc.cpp.i
+
+crc.s: crc.cpp.s
+
+.PHONY : crc.s
+
+# target to generate assembly for a file
+crc.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.s
+.PHONY : crc.cpp.s
+
 main.obj: main.cpp.obj
 
 .PHONY : main.obj
@@ -190,6 +217,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... udpapp
+	@echo ... crc.obj
+	@echo ... crc.i
+	@echo ... crc.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

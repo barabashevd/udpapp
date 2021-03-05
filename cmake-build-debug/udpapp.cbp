@@ -84,6 +84,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/crc.cpp">
+			<Option target="udpapp"/>
+		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/crc.h">
+			<Option target="udpapp"/>
+		</Unit>
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/main.cpp">
 			<Option target="udpapp"/>
 		</Unit>

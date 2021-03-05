@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/udpapp.dir/crc.cpp.obj"
   "CMakeFiles/udpapp.dir/main.cpp.obj"
   "CMakeFiles/udpapp.dir/stdafx.cpp.obj"
   "udpapp.exe"
