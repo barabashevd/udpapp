@@ -8,7 +8,21 @@
 #include <stdio.h>
 #include <string>
 
-#define DATA "DATA="
+#define DATA "DATA{"
+#define NAME "NAME={"
+#define SIZE "SIZE={"
+#define SHA  "SHA={"
+#define NUMBER "N={"
+#define START "START"
+#define STOP "STOP"
+
+#define SUM "SUM="
+#define CRC "CRC={"
+#define ACK "ACK"
+
+#define BUFFERS_LEN 1024 - 42
+
+
 
 void clear_buffer(char *b, int len);
 int get_filesize(FILE *file);

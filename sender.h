@@ -11,16 +11,5 @@
 #include "crc.h"
 #include "utils.h"
 
-#define NAME "NAME="
-#define SIZE "SIZE="
-#define START "START"
-#define DATA "DATA="
-#define STOP "STOP"
-
-#define SUM "SUM="
-#define CRC "CRC="
-#define ACK "ACK"
-
-#define BUFFERS_LEN 1024 - 42
 
 int send_file(char *target_ip, char *filename, int target_port, int local_port);

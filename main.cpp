@@ -32,30 +32,10 @@
 #define SENDER_PORT 8888
 #define RECEIVER_PORT 5555
 
-#define BUFFERS_LEN 1024 - 42
-
-#define NAME "NAME="
-#define SIZE "SIZE="
-#define START "START"
-#define DATA "DATA="
-#define STOP "STOP"
-
-#define SUM "SUM="
-#define CRC "CRC="
-#define ACK "ACK"
-
 #define SENDER_FLAG "-s"
 #define IP_FLAG "-ip"
 #define FILENAME_FLAG "-f"
 #define HELP "--help"
-
-void clear_buffer(char *b, int len);
-
-void init_win_socket();
-
-int get_filesize(FILE *file);
-
-int write_file(char *buf, int s, FILE *file);
 
 void printf_flags();
 
@@ -105,7 +85,8 @@ int main(int argc, char *argv[]) {
     } else {
         SOCKET socketS;
 
-        init_win_socket();
+        WSADATA wsaData;
+        WSAStartup(MAKEWORD(2, 2), &wsaData);
 
         struct sockaddr_in local{};
         struct sockaddr_in from{};
@@ -220,11 +201,6 @@ int main(int argc, char *argv[]) {
     printf("Sending done...\n");
 
     return 0;
-}
-
-void init_win_socket() {
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
 }
 
 void printf_flags(){
