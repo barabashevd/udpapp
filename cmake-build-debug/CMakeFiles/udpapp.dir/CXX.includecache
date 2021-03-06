@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+C:/Users/barab/CLionProjects/udpapp/crc.h
+
 C:/Users/barab/CLionProjects/udpapp/main.cpp
 stdafx.h
 C:/Users/barab/CLionProjects/udpapp/stdafx.h
@@ -15,6 +17,8 @@ ws2tcpip.h
 C:/Users/barab/CLionProjects/udpapp/ws2tcpip.h
 string
 -
+crc.h
+C:/Users/barab/CLionProjects/udpapp/crc.h
 
 C:/Users/barab/CLionProjects/udpapp/stdafx.h
 targetver.h

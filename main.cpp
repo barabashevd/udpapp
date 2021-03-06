@@ -41,15 +41,22 @@
 
 #define SUM "SUM="
 #define CRC "CRC="
+#define ACK "ACK"
 
 #define SENDER_FLAG "-s"
 #define IP_FLAG "-ip"
 #define FILENAME_FLAG "-f"
+#define HELP "--help"
 
 void clear_buffer(char *b, int len);
+
 void init_win_socket();
+
 int get_filesize(FILE *file);
+
 int write_file(char *buf, int s, FILE *file);
+
+void printf_flags();
 
 int main(int argc, char *argv[]) {
     bool sender = false;
@@ -58,6 +65,11 @@ int main(int argc, char *argv[]) {
     int target_port, local_port;
 
     for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], HELP) == 0) {
+            printf_flags();
+            return 1;
+        }
+
         if (strcmp(argv[i], SENDER_FLAG) == 0) {
             printf("App in sender mode.\n");
             sender = true;
@@ -101,16 +113,18 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    sockaddr_in addrDest{};
+    addrDest.sin_family = AF_INET;
+    addrDest.sin_port = htons(target_port);
+    InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
+
     if (sender) {
         char buffer_tx[BUFFERS_LEN];
+        char response[100];
 
         FILE *file = fopen(filename, "rb");
         int file_size = get_filesize(file);
 
-        sockaddr_in addrDest{};
-        addrDest.sin_family = AF_INET;
-        addrDest.sin_port = htons(target_port);
-        InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
         // Sends filename in "NAME=filename" format
         clear_buffer(buffer_tx, BUFFERS_LEN);
@@ -119,6 +133,11 @@ int main(int argc, char *argv[]) {
         sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         printf("Filename sent.\n");
 
+        // Wait for ACK
+        int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
+        if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
+            printf("ACK for filename received, %s\n", response);
+        }
 
         // Sends filesize in "SIZE=[bytes]" format
         clear_buffer(buffer_tx, BUFFERS_LEN);
@@ -172,21 +191,21 @@ int main(int argc, char *argv[]) {
         clear_buffer(buffer_rx, BUFFERS_LEN);
         printf("Waiting for filename...\n");
 
-        int wait = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
-                            0, (struct sockaddr *) &from,
-                            &from_len);
+        int wait = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
         if (wait != SOCKET_ERROR && strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
             char *prefix = strtok(buffer_rx, "=");
             const char *fname = strtok(NULL, "=");
             output = fopen(fname, "wb");
             printf("Filename: %s\n", fname);
-
-
         } else {
             printf("Socket error.\n");
             return 1;
         }
+
+        // Sends ACK for filename
+        sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+
         // -------------------------------------------------------------
         clear_buffer(buffer_rx, BUFFERS_LEN);
         printf("Waiting for file size...\n");
@@ -285,4 +304,12 @@ int write_file(char *buf, int s, FILE *file) {
         printf("Error: invalid structure!\n");
     }
     return 0;
+}
+
+void printf_flags(){
+    printf("Flags\n");
+    printf("\t-s for sender flag\n");
+    printf("\t-ip [IP] = set target ip\n");
+    printf("\t-f [FILENAME] = set filename to load\n");
+    printf("\t--help = shows all flags");
 }
