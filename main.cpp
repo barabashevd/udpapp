@@ -26,7 +26,8 @@
 #include "ws2tcpip.h"
 #include <string>
 
-#include "crc.h"
+#include "sender.h"
+#include "utils.h"
 
 #define SENDER_PORT 8888
 #define RECEIVER_PORT 5555
@@ -92,99 +93,43 @@ int main(int argc, char *argv[]) {
         local_port = RECEIVER_PORT;
     }
 
-    SOCKET socketS;
-
-    init_win_socket();
-
-    struct sockaddr_in local{};
-    struct sockaddr_in from{};
-
-    int from_len = sizeof(from);
-    local.sin_family = AF_INET;
-    local.sin_port = htons(local_port);
-    local.sin_addr.s_addr = INADDR_ANY;
-
-    socketS = socket(AF_INET, SOCK_DGRAM, 0);
-
-
-    // Binds a socket to a port, fails if the port is in use
-    if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
-        printf("Binding error!\n");
-        return 1;
-    }
-
-    sockaddr_in addrDest{};
-    addrDest.sin_family = AF_INET;
-    addrDest.sin_port = htons(target_port);
-    InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
     if (sender) {
-        char buffer_tx[BUFFERS_LEN];
-        char response[100];
+        int result = send_file(target_ip, filename, target_port, local_port);
 
-        FILE *file = fopen(filename, "rb");
-        int file_size = get_filesize(file);
-
-
-        // Sends filename in "NAME=filename" format
-        clear_buffer(buffer_tx, BUFFERS_LEN);
-        strcpy(buffer_tx, NAME);
-        strcat(buffer_tx, filename);
-        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-        printf("Filename sent.\n");
-
-        // Wait for ACK
-        int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
-        if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
-            printf("ACK for filename received, %s\n", response);
+        if(result != 0){
+            printf("Sorry, something went wrong. ERRNO = %i", result);
         }
 
-        // Sends filesize in "SIZE=[bytes]" format
-        clear_buffer(buffer_tx, BUFFERS_LEN);
-        strcpy(buffer_tx, SIZE);
-        // Tohle jsou celkem kouzla, nejdriv to prevede v c++ do std::string pomoci <string> a pak do C stringu
-        strcat(buffer_tx, std::to_string(file_size).c_str());
-        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-        printf("Filesize sent, it is: %i\n", file_size);
-
-        // Sends start flag
-        clear_buffer(buffer_tx, BUFFERS_LEN);
-        strcpy(buffer_tx, START);
-        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-        printf("Start flag sent.\n");
-
-        int read;
-        while (!feof(file)) {
-            clear_buffer(buffer_tx, BUFFERS_LEN);
-            strcpy(buffer_tx, DATA);
-            for (int i = sizeof(DATA) - 1; i < BUFFERS_LEN; i++) {
-                if (!feof(file)) {
-                    *(buffer_tx + i) = fgetc(file);
-                } else {
-                    printf("End of file reached.\n");
-                    break;
-                }
-            }
-            // Calculate CRC
-            unsigned char crc = get_crc(buffer_tx, BUFFERS_LEN, 0xffff, 0);
-            printf("CRC: %i\n", crc);
-
-            sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
-        }
-
-        // Sends stop flag
-        clear_buffer(buffer_tx, BUFFERS_LEN);
-        strcpy(buffer_tx, STOP);
-        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-        printf("Stop flag sent.\n");
-
-        if (file != nullptr) {
-            fclose(file);
-        }
-
+        return result;
     } else {
-        char buffer_rx[BUFFERS_LEN];
+        SOCKET socketS;
 
+        init_win_socket();
+
+        struct sockaddr_in local{};
+        struct sockaddr_in from{};
+
+        int from_len = sizeof(from);
+        local.sin_family = AF_INET;
+        local.sin_port = htons(local_port);
+        local.sin_addr.s_addr = INADDR_ANY;
+
+        socketS = socket(AF_INET, SOCK_DGRAM, 0);
+
+
+        // Binds a socket to a port, fails if the port is in use
+        if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
+            printf("Binding error!\n");
+            return 1;
+        }
+
+        sockaddr_in addrDest{};
+        addrDest.sin_family = AF_INET;
+        addrDest.sin_port = htons(target_port);
+        InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
+
+        char buffer_rx[BUFFERS_LEN];
 
         FILE *output;
 
@@ -269,41 +214,17 @@ int main(int argc, char *argv[]) {
             integer_fsize = integer_fsize - packet_size + 5;
         }
         fclose(output);
+        closesocket(socketS);
     }
-    closesocket(socketS);
+
     printf("Sending done...\n");
 
     return 0;
 }
 
-void clear_buffer(char *b, int len) {
-    for (int i = 0; i < len; i++) {
-        b[i] = '\0';
-    }
-}
-
 void init_win_socket() {
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
-}
-
-int get_filesize(FILE *file) {
-    fseek(file, 0L, SEEK_END);
-    int size = ftell(file);
-    fseek(file, 0L, SEEK_SET);
-    return size;
-}
-
-int write_file(char *buf, int s, FILE *file) {
-    if (strncmp(buf, DATA, sizeof(DATA) - 1) == 0) {
-        for (int i = sizeof(DATA) - 1; i < s; i++) {
-            // fwrite(buf + i, sizeof(char), 1, file);
-            fputc(*(buf + i), file);
-        }
-    } else {
-        printf("Error: invalid structure!\n");
-    }
-    return 0;
 }
 
 void printf_flags(){

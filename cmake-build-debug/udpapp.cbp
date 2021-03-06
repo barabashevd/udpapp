@@ -93,6 +93,12 @@
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/main.cpp">
 			<Option target="udpapp"/>
 		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/sender.cpp">
+			<Option target="udpapp"/>
+		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/sender.h">
+			<Option target="udpapp"/>
+		</Unit>
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/stdafx.cpp">
 			<Option target="udpapp"/>
 		</Unit>
@@ -100,6 +106,12 @@
 			<Option target="udpapp"/>
 		</Unit>
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/targetver.h">
+			<Option target="udpapp"/>
+		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/utils.cpp">
+			<Option target="udpapp"/>
+		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/utils.h">
 			<Option target="udpapp"/>
 		</Unit>
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/CMakeLists.txt">

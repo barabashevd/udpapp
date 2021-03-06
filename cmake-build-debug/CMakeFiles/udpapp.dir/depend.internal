@@ -6,9 +6,19 @@ CMakeFiles/udpapp.dir/crc.cpp.obj
 CMakeFiles/udpapp.dir/main.cpp.obj
  C:/Users/barab/CLionProjects/udpapp/crc.h
  C:/Users/barab/CLionProjects/udpapp/main.cpp
+ C:/Users/barab/CLionProjects/udpapp/sender.h
  C:/Users/barab/CLionProjects/udpapp/stdafx.h
  C:/Users/barab/CLionProjects/udpapp/targetver.h
+ C:/Users/barab/CLionProjects/udpapp/utils.h
+CMakeFiles/udpapp.dir/sender.cpp.obj
+ C:/Users/barab/CLionProjects/udpapp/crc.h
+ C:/Users/barab/CLionProjects/udpapp/sender.cpp
+ C:/Users/barab/CLionProjects/udpapp/sender.h
+ C:/Users/barab/CLionProjects/udpapp/utils.h
 CMakeFiles/udpapp.dir/stdafx.cpp.obj
  C:/Users/barab/CLionProjects/udpapp/stdafx.cpp
  C:/Users/barab/CLionProjects/udpapp/stdafx.h
  C:/Users/barab/CLionProjects/udpapp/targetver.h
+CMakeFiles/udpapp.dir/utils.cpp.obj
+ C:/Users/barab/CLionProjects/udpapp/utils.cpp
+ C:/Users/barab/CLionProjects/udpapp/utils.h

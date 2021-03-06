@@ -181,6 +181,33 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\main.cpp.s
 .PHONY : main.cpp.s
 
+sender.obj: sender.cpp.obj
+
+.PHONY : sender.obj
+
+# target to build an object file
+sender.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.obj
+.PHONY : sender.cpp.obj
+
+sender.i: sender.cpp.i
+
+.PHONY : sender.i
+
+# target to preprocess a source file
+sender.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.i
+.PHONY : sender.cpp.i
+
+sender.s: sender.cpp.s
+
+.PHONY : sender.s
+
+# target to generate assembly for a file
+sender.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.s
+.PHONY : sender.cpp.s
+
 stdafx.obj: stdafx.cpp.obj
 
 .PHONY : stdafx.obj
@@ -208,6 +235,33 @@ stdafx.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\stdafx.cpp.s
 .PHONY : stdafx.cpp.s
 
+utils.obj: utils.cpp.obj
+
+.PHONY : utils.obj
+
+# target to build an object file
+utils.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.obj
+.PHONY : utils.cpp.obj
+
+utils.i: utils.cpp.i
+
+.PHONY : utils.i
+
+# target to preprocess a source file
+utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.i
+.PHONY : utils.cpp.i
+
+utils.s: utils.cpp.s
+
+.PHONY : utils.s
+
+# target to generate assembly for a file
+utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.s
+.PHONY : utils.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -223,9 +277,15 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... sender.obj
+	@echo ... sender.i
+	@echo ... sender.s
 	@echo ... stdafx.obj
 	@echo ... stdafx.i
 	@echo ... stdafx.s
+	@echo ... utils.obj
+	@echo ... utils.i
+	@echo ... utils.s
 .PHONY : help
 
 
