@@ -5,6 +5,7 @@
 #include "receiver.h"
 
 int receive_file(char *target_ip, int target_port, int local_port) {
+    // TODO function to open socket
     SOCKET socketS;
 
     WSADATA wsaData;
@@ -33,56 +34,82 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
     char buffer_rx[BUFFERS_LEN];
+    //-----------------------------------------------------------
+
 
     FILE *output;
+    int position = 0;
 
     clear_buffer(buffer_rx, BUFFERS_LEN);
-    printf("Waiting for filename...\n");
+    printf("Waiting for init info...\n");
+    int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
-    int wait = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
-
-    if (wait != SOCKET_ERROR && strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
-        char *prefix = strtok(buffer_rx, "=");
-        const char *fname = strtok(NULL, "=");
-        output = fopen(fname, "wb");
-        printf("Filename: %s\n", fname);
-    } else {
-        printf("Socket error.\n");
+    if (rec_init_info == SOCKET_ERROR) {
+        fprintf(stderr, "Socket error!");
         return 1;
+    }
+
+    // Receives file name
+
+    char *rest;
+    if(strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
+        const char *fname = strtok(buffer_rx, "{");
+        fname = strtok(nullptr, "}");
+        rest = strtok(nullptr, "");
+
+        output = fopen("output.txt", "wb");
+        printf("File name: %s\n", fname);
     }
 
     // Sends ACK for filename
-    sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+    //sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
 
-    // -------------------------------------------------------------
-    clear_buffer(buffer_rx, BUFFERS_LEN);
-    printf("Waiting for file size...\n");
+    // Receives file size
+    int integer_fsize = 0;
+    if (strncmp(rest, SIZE, sizeof(SIZE) - 1) == 0) {
+        const char *fsize = strtok(rest, "{");
+        fsize = strtok(nullptr, "}");
+        rest = strtok(nullptr, "");
 
-    int rec_size = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
-                            0, (struct sockaddr *) &from,
-                            &from_len);
-
-
-    int integer_fsize;
-    if (rec_size != SOCKET_ERROR && strncmp(buffer_rx, SIZE, sizeof(SIZE) - 1) == 0) {
-        char *prefix = strtok(buffer_rx, "=");
-        const char *fsize = strtok(nullptr, "=");
-
+        // Convert string to int
         std::string str_fsize = std::string(fsize);
         integer_fsize = (int) std::strtol(str_fsize.c_str(), nullptr, 10);
-        if (integer_fsize == 0) {
-            printf("Error: cannot convert size!\n");
-        }
 
         printf("File size: %d\n", integer_fsize);
-    } else {
-        printf("Socket error.\n");
-        return 1;
+
+       if (integer_fsize == 0) {
+           fprintf(stderr, "Error: cannot convert size!\n");
+           return 2;
+       }
+
     }
+
+    // -------------------------------------------------------------
+    // Receives sha
+    if(strncmp(rest, SHA, sizeof(SHA) - 1) == 0) {
+        const char *sha = strtok(rest, "{");
+        sha = strtok(nullptr, "}");
+        rest = strtok(nullptr, "");
+
+        printf("SHA: %s\n", sha);
+
+    }
+
+    // Receives crc
+    if(strncmp(rest, CRC, sizeof(CRC) - 1) == 0) {
+        const char *crc = strtok(rest, "{");
+        crc = strtok(nullptr, "}");
+        rest = strtok(nullptr, "");
+
+        int integer_crc;
+        std::string str_crc = std::string(crc);
+        integer_crc = (int) std::strtol(str_crc.c_str(), nullptr, 10);
+        printf("CRC: %d\n", integer_crc);
+    }
+
     // -----------------------------------------------------------------
     clear_buffer(buffer_rx, BUFFERS_LEN);
     printf("Waiting for start flag...\n");
-
     int rec_start = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                              0, (struct sockaddr *) &from,
                              &from_len);
@@ -91,7 +118,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         printf("Received flag: %s\n", buffer_rx);
         printf("Start flag received - ready for data\n");
     } else {
-        printf("Socket error.\n");
+        fprintf(stderr, "Socket error.\n");
         return 1;
     }
 
@@ -101,10 +128,11 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         int rec = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                            0, (struct sockaddr *) &from,
                            &from_len);
+        //printf("BUFF: %s\n", buffer_rx);
 
         if (rec == SOCKET_ERROR) {
-            printf("Socket error!\n");
-            break;
+            fprintf(stderr, "Socket error.\n");
+            return 1;
         }
 
         if (strncmp(buffer_rx, STOP, sizeof(STOP) - 1) == 0) {
@@ -113,8 +141,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         }
 
         int packet_size = integer_fsize > BUFFERS_LEN ? BUFFERS_LEN : integer_fsize;
-        write_file(buffer_rx, packet_size, output);
-        integer_fsize = integer_fsize - packet_size + 5;
+        write_file(buffer_rx, packet_size - CRC_LEN, output);
+        integer_fsize -= (packet_size - sizeof(DATA) - CRC_LEN - 1);
     }
     fclose(output);
     closesocket(socketS);

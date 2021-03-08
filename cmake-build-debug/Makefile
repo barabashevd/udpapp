@@ -52,10 +52,10 @@ RM = "C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E 
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\barab\CLionProjects\udpapp
+CMAKE_SOURCE_DIR = C:\Users\AdamC\CLionProjects\udpapp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\barab\CLionProjects\udpapp\cmake-build-debug
+CMAKE_BINARY_DIR = C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -84,9 +84,9 @@ rebuild_cache\fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -127,6 +127,33 @@ udpapp\fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\build
 .PHONY : udpapp\fast
 
+crc.obj: crc.cpp.obj
+
+.PHONY : crc.obj
+
+# target to build an object file
+crc.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.obj
+.PHONY : crc.cpp.obj
+
+crc.i: crc.cpp.i
+
+.PHONY : crc.i
+
+# target to preprocess a source file
+crc.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.i
+.PHONY : crc.cpp.i
+
+crc.s: crc.cpp.s
+
+.PHONY : crc.s
+
+# target to generate assembly for a file
+crc.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\crc.cpp.s
+.PHONY : crc.cpp.s
+
 main.obj: main.cpp.obj
 
 .PHONY : main.obj
@@ -153,6 +180,60 @@ main.s: main.cpp.s
 main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\main.cpp.s
 .PHONY : main.cpp.s
+
+receiver.obj: receiver.cpp.obj
+
+.PHONY : receiver.obj
+
+# target to build an object file
+receiver.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\receiver.cpp.obj
+.PHONY : receiver.cpp.obj
+
+receiver.i: receiver.cpp.i
+
+.PHONY : receiver.i
+
+# target to preprocess a source file
+receiver.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\receiver.cpp.i
+.PHONY : receiver.cpp.i
+
+receiver.s: receiver.cpp.s
+
+.PHONY : receiver.s
+
+# target to generate assembly for a file
+receiver.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\receiver.cpp.s
+.PHONY : receiver.cpp.s
+
+sender.obj: sender.cpp.obj
+
+.PHONY : sender.obj
+
+# target to build an object file
+sender.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.obj
+.PHONY : sender.cpp.obj
+
+sender.i: sender.cpp.i
+
+.PHONY : sender.i
+
+# target to preprocess a source file
+sender.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.i
+.PHONY : sender.cpp.i
+
+sender.s: sender.cpp.s
+
+.PHONY : sender.s
+
+# target to generate assembly for a file
+sender.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\sender.cpp.s
+.PHONY : sender.cpp.s
 
 stdafx.obj: stdafx.cpp.obj
 
@@ -181,6 +262,33 @@ stdafx.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\stdafx.cpp.s
 .PHONY : stdafx.cpp.s
 
+utils.obj: utils.cpp.obj
+
+.PHONY : utils.obj
+
+# target to build an object file
+utils.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.obj
+.PHONY : utils.cpp.obj
+
+utils.i: utils.cpp.i
+
+.PHONY : utils.i
+
+# target to preprocess a source file
+utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.i
+.PHONY : utils.cpp.i
+
+utils.s: utils.cpp.s
+
+.PHONY : utils.s
+
+# target to generate assembly for a file
+utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\udpapp.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\udpapp.dir\utils.cpp.s
+.PHONY : utils.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -190,12 +298,24 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... udpapp
+	@echo ... crc.obj
+	@echo ... crc.i
+	@echo ... crc.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... receiver.obj
+	@echo ... receiver.i
+	@echo ... receiver.s
+	@echo ... sender.obj
+	@echo ... sender.i
+	@echo ... sender.s
 	@echo ... stdafx.obj
 	@echo ... stdafx.i
 	@echo ... stdafx.s
+	@echo ... utils.obj
+	@echo ... utils.i
+	@echo ... utils.s
 .PHONY : help
 
 

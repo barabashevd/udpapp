@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     } else {
         result = receive_file(target_ip, target_port, local_port);
 
-        if (!result) {
+        if (result) {
             printf("Sorry, something went wrong. ERRNO = %i", result);
         }
     }
