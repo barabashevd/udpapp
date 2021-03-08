@@ -21,7 +21,7 @@
 #define ACK "ACK"
 #define CRC_LEN 50
 
-#define BUFFERS_LEN 1024 - 42
+#define BUFFERS_LEN 982
 #define CRC_LEN 50
 
 

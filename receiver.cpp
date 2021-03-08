@@ -145,7 +145,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         if (packet_size == BUFFERS_LEN) {
             write_file(buffer_rx, packet_size - CRC_LEN, output);
         } else {
-            write_file(buffer_rx, packet_size + 3, output);
+            write_file(buffer_rx, integer_fsize - 1, output);
         }
 
 
