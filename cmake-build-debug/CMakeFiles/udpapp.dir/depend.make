@@ -5,10 +5,16 @@ CMakeFiles\udpapp.dir\crc.cpp.obj: ..\crc.cpp
 
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\crc.h
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\main.cpp
+CMakeFiles\udpapp.dir\main.cpp.obj: ..\receiver.h
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\sender.h
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\stdafx.h
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\targetver.h
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\utils.h
+
+CMakeFiles\udpapp.dir\receiver.cpp.obj: ..\crc.h
+CMakeFiles\udpapp.dir\receiver.cpp.obj: ..\receiver.cpp
+CMakeFiles\udpapp.dir\receiver.cpp.obj: ..\receiver.h
+CMakeFiles\udpapp.dir\receiver.cpp.obj: ..\utils.h
 
 CMakeFiles\udpapp.dir\sender.cpp.obj: ..\crc.h
 CMakeFiles\udpapp.dir\sender.cpp.obj: ..\sender.cpp

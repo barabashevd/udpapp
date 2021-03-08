@@ -91,27 +91,44 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         clear_buffer(buffer_tx, BUFFERS_LEN);
         strcpy(buffer_tx, DATA);
 
-        for (int i = sizeof(DATA) - 1; i < BUFFERS_LEN - crc_size ; i++) {
+        int pos;
+
+        for (pos = sizeof(DATA) - 1; pos < BUFFERS_LEN - crc_size ; pos++) {
             if (!feof(file)) {
-                *(buffer_tx + i) = fgetc(file);
+                *(buffer_tx + pos) = fgetc(file);
             } else {
                 printf("End of file reached.\n");
                 break;
             }
         }
 
+        char pakcet_tail[50];
         // Add packet number
-        strcat(buffer_tx, "}");
-        strcat(buffer_tx, NUMBER);
-        strcat(buffer_tx, std::to_string(counter).c_str());
-        strcat(buffer_tx, "}");
+        strcpy(pakcet_tail, "}");
+        strcat(pakcet_tail, NUMBER);
+        strcat(pakcet_tail, std::to_string(counter).c_str());
+        strcat(pakcet_tail, "}");
+        int tail_len = strlen(pakcet_tail);
+        // printf("tail: %s", pakcet_tail);
         counter++;
 
+        for (int i = 0; i < tail_len; i++){
+            *(buffer_tx + pos + i) = *(pakcet_tail + i);
+        }
+
+        pos += tail_len;
+
         // Calculate CRC
+        clear_buffer(pakcet_tail, CRC_LEN);
         int data_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
-        strcat(buffer_tx, CRC);
-        strcat(buffer_tx, std::to_string(data_crc).c_str());
-        strcat(buffer_tx, "}");
+        strcat(pakcet_tail, CRC);
+        strcat(pakcet_tail, std::to_string(data_crc).c_str());
+        strcat(pakcet_tail, "}");
+        tail_len = strlen(pakcet_tail);
+
+        for (int i = 0; i < tail_len; i++){
+            *(buffer_tx + pos + i) = *(pakcet_tail + i);
+        }
 
 
         sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));

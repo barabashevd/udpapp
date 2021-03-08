@@ -19,6 +19,7 @@
 #define SUM "SUM="
 #define CRC "CRC={"
 #define ACK "ACK"
+#define CRC_LEN 50
 
 #define BUFFERS_LEN 1024 - 42
 

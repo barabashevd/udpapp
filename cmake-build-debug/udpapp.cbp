@@ -93,6 +93,12 @@
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/main.cpp">
 			<Option target="udpapp"/>
 		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/receiver.cpp">
+			<Option target="udpapp"/>
+		</Unit>
+		<Unit filename="C:/Users/barab/CLionProjects/udpapp/receiver.h">
+			<Option target="udpapp"/>
+		</Unit>
 		<Unit filename="C:/Users/barab/CLionProjects/udpapp/sender.cpp">
 			<Option target="udpapp"/>
 		</Unit>
