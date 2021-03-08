@@ -22,11 +22,14 @@
 #define CRC_LEN 50
 
 #define BUFFERS_LEN 1024 - 42
+#define CRC_LEN 50
+
+
 
 
 
 void clear_buffer(char *b, int len);
 int get_filesize(FILE *file);
-int write_file(char *buf, int s, FILE *file);
+int write_file(char *buf, int packet_size, FILE *file);
 
 #endif //UDPAPP_UTILS_H

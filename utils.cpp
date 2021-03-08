@@ -6,12 +6,14 @@
 
 void clear_buffer(char *b, int len);
 int get_filesize(FILE *file);
-int write_file(char *buf, int s, FILE *file);
+int write_file(char *buf, int packet_size, FILE *file);
 
 int get_filesize(FILE *file) {
     fseek(file, 0L, SEEK_END);
     int size = ftell(file);
+    printf("Size in func: %d \n", size);
     fseek(file, 0L, SEEK_SET);
+
     return size;
 }
 

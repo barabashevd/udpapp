@@ -49,6 +49,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     // Adds filesize to buffer
     strcat(buffer_tx, SIZE);
     strcat(buffer_tx, std::to_string(file_size).c_str());
+
     strcat(buffer_tx, "}");
 
     // Adds sha of the file
@@ -71,7 +72,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
         printf("ACK for filename received, %s\n", response);
     }
-    */
+     */
 
     // Sends start flag
     clear_buffer(buffer_tx, BUFFERS_LEN);
@@ -148,4 +149,8 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     closesocket(socketS);
     return 0;
 }
+
+
+
+
 

@@ -57,7 +57,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         fname = strtok(nullptr, "}");
         rest = strtok(nullptr, "");
 
-        output = fopen("output.txt", "wb");
+        output = fopen("output.png", "wb");
         printf("File name: %s\n", fname);
     }
 
@@ -141,7 +141,15 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         }
 
         int packet_size = integer_fsize > BUFFERS_LEN ? BUFFERS_LEN : integer_fsize;
-        write_file(buffer_rx, packet_size - CRC_LEN, output);
+
+        if (packet_size == BUFFERS_LEN) {
+            write_file(buffer_rx, packet_size - CRC_LEN, output);
+        } else {
+            write_file(buffer_rx, packet_size + 3, output);
+        }
+
+
+
         integer_fsize -= (packet_size - sizeof(DATA) - CRC_LEN - 1);
     }
     fclose(output);
