@@ -84,7 +84,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     int read;
     int counter = 0;
-    int crc_size = 50; // celkem random hodnota
+    int crc_size = CRC_LEN + 1; // celkem random hodnota
 
     // Data are sent in format: DATA{data...}NUMBER={n}CRC={crc}
 
@@ -103,7 +103,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
             }
         }
 
-        char pakcet_tail[50];
+        char pakcet_tail[CRC_LEN + 1];
         // Add packet number
         strcpy(pakcet_tail, "}");
         strcat(pakcet_tail, NUMBER);
@@ -130,7 +130,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         for (int i = 0; i < tail_len; i++){
             *(buffer_tx + pos + i) = *(pakcet_tail + i);
         }
-
 
         sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
     }

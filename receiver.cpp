@@ -52,7 +52,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     // Receives file name
 
     char *rest;
-    if(strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
+    if (strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
         const char *fname = strtok(buffer_rx, "{");
         fname = strtok(nullptr, "}");
         rest = strtok(nullptr, "");
@@ -62,7 +62,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     }
 
     // Sends ACK for filename
-    //sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+    // sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
 
     // Receives file size
     int integer_fsize = 0;
@@ -77,16 +77,16 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         printf("File size: %d\n", integer_fsize);
 
-       if (integer_fsize == 0) {
-           fprintf(stderr, "Error: cannot convert size!\n");
-           return 2;
-       }
+        if (integer_fsize == 0) {
+            fprintf(stderr, "Error: cannot convert size!\n");
+            return 2;
+        }
 
     }
 
     // -------------------------------------------------------------
     // Receives sha
-    if(strncmp(rest, SHA, sizeof(SHA) - 1) == 0) {
+    if (strncmp(rest, SHA, sizeof(SHA) - 1) == 0) {
         const char *sha = strtok(rest, "{");
         sha = strtok(nullptr, "}");
         rest = strtok(nullptr, "");
@@ -96,7 +96,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     }
 
     // Receives crc
-    if(strncmp(rest, CRC, sizeof(CRC) - 1) == 0) {
+    if (strncmp(rest, CRC, sizeof(CRC) - 1) == 0) {
         const char *crc = strtok(rest, "{");
         crc = strtok(nullptr, "}");
         rest = strtok(nullptr, "");
@@ -140,17 +140,11 @@ int receive_file(char *target_ip, int target_port, int local_port) {
             break;
         }
 
-        int packet_size = integer_fsize > BUFFERS_LEN ? BUFFERS_LEN : integer_fsize;
+        int real_data_size = BUFFERS_LEN - sizeof(DATA) - CRC_LEN; // odecitani a pricitani jednicky = 0
+        int packet_size = integer_fsize > real_data_size ? (BUFFERS_LEN - CRC_LEN) : (integer_fsize + sizeof(DATA));
+        write_file(buffer_rx, packet_size, output);
 
-        if (packet_size == BUFFERS_LEN) {
-            write_file(buffer_rx, packet_size - CRC_LEN, output);
-        } else {
-            write_file(buffer_rx, integer_fsize - 1, output);
-        }
-
-
-
-        integer_fsize -= (packet_size - sizeof(DATA) - CRC_LEN - 1);
+        integer_fsize -= real_data_size;
     }
     fclose(output);
     closesocket(socketS);

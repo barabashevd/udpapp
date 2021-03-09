@@ -19,7 +19,7 @@ int get_filesize(FILE *file) {
 
 int write_file(char *buf, int s, FILE *file) {
     if (strncmp(buf, DATA, sizeof(DATA) - 1) == 0) {
-        for (int i = sizeof(DATA) - 1; i < s; i++) {
+        for (int i = sizeof(DATA) - 1; i < s - 1; i++) {
             fputc(*(buf + i), file);
         }
     } else {
