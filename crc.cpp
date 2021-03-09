@@ -45,8 +45,8 @@ static unsigned short crc_table[256] = {
         0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-unsigned short get_crc( char *data, size_t length, unsigned short seed, unsigned short final) {
-
+unsigned short get_crc(char *data, size_t length, unsigned short seed, unsigned short final) {
+    //  int crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
     size_t count;
     unsigned int crc = seed;
     unsigned int temp;

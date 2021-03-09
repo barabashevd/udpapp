@@ -72,7 +72,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
         printf("ACK for filename received, %s\n", response);
     }
-     */
+    */
 
     // Sends start flag
     clear_buffer(buffer_tx, BUFFERS_LEN);
