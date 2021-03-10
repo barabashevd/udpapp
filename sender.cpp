@@ -59,6 +59,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     // Calculates CRC of the packet
     int init_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
+    printf("Z ceho pocitat crc? %s\n\n", buffer_tx);
     strcat(buffer_tx, CRC);
     strcat(buffer_tx, std::to_string(init_crc).c_str());
     strcat(buffer_tx, "}");
@@ -72,7 +73,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
         printf("ACK for filename received, %s\n", response);
     }
-     */
+    */
 
     // Sends start flag
     clear_buffer(buffer_tx, BUFFERS_LEN);
@@ -84,7 +85,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     int read;
     int counter = 0;
-    int crc_size = 50; // celkem random hodnota
+    int crc_size = CRC_LEN + 1; // celkem random hodnota
 
     // Data are sent in format: DATA{data...}NUMBER={n}CRC={crc}
 
@@ -103,7 +104,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
             }
         }
 
-        char pakcet_tail[50];
+        char pakcet_tail[CRC_LEN + 1];
         // Add packet number
         strcpy(pakcet_tail, "}");
         strcat(pakcet_tail, NUMBER);
@@ -130,7 +131,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         for (int i = 0; i < tail_len; i++){
             *(buffer_tx + pos + i) = *(pakcet_tail + i);
         }
-
 
         sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
     }

@@ -14,3 +14,4 @@
 #include "utils.h"
 
 int receive_file(char *sender_ip, int sender_port, int local_port);
+int strip_data(char **buff_ptr, char *tag, char **data);
