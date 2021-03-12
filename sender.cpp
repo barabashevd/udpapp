@@ -59,7 +59,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     // Calculates CRC of the packet
     int init_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
-    printf("Z ceho pocitat crc? %s\n\n", buffer_tx);
     strcat(buffer_tx, CRC);
     strcat(buffer_tx, std::to_string(init_crc).c_str());
     strcat(buffer_tx, "}");
@@ -92,12 +91,13 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     while (!feof(file)) {
         clear_buffer(buffer_tx, BUFFERS_LEN);
         strcpy(buffer_tx, DATA);
-
+        int chars_read = 0;
         int pos;
 
         for (pos = sizeof(DATA) - 1; pos < BUFFERS_LEN - crc_size ; pos++) {
             if (!feof(file)) {
                 *(buffer_tx + pos) = fgetc(file);
+                chars_read += 1;
             } else {
                 printf("End of file reached.\n");
                 break;
@@ -121,8 +121,14 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         pos += tail_len;
 
         // Calculate CRC
+        // TODO proč nefunguje chars_read + sizeof(DATA) + sizeof('}')?
         clear_buffer(pakcet_tail, CRC_LEN);
-        int data_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
+        int data_crc = get_crc(buffer_tx, chars_read + sizeof(DATA), 0xffff, 0);
+
+        //FILE *f = fopen("og_crc_buf.txt", "w");
+        //fwrite(buffer_tx, chars_read + sizeof(DATA), 1, f);
+        //fclose(f);
+
         strcat(pakcet_tail, CRC);
         strcat(pakcet_tail, std::to_string(data_crc).c_str());
         strcat(pakcet_tail, "}");

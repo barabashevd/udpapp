@@ -47,15 +47,12 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         return 1;
     }
 
-    // Reads file name
-    //-----------------------------------------------------------
-
     char *buff_ptr = &(buffer_rx[0]);
     char copy_for_crc[BUFFERS_LEN];
     strcpy(copy_for_crc, buffer_rx);
 
-
-
+    // Reads file name
+    //-----------------------------------------------------------/
     static char *fname;
     int strip_res = strip_data(&buff_ptr, (char *)NAME, &fname);
     if (strip_res == 0) {
@@ -100,26 +97,23 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     strip_res = strip_data(&buff_ptr, (char *)CRC, &str_init_crc);
     if (strip_res == 0) {
         init_crc = convert_c_str_to_int(str_init_crc);
-        printf("CRC: %d\n", init_crc);
+        //printf("CRC: %d\n", init_crc);
+        //printf("STR CRC: %s\n", str_init_crc);
     } else {
         fprintf(stderr, "Error: cannot read CRC\n");
         return 1;
     }
 
      //init_crc check
-    //int offset = strlen(copy_for_crc) - (strlen(str_init_crc) + sizeof(CRC));
-//
-    //char buff_clone[BUFFERS_LEN];
-    //int cpy_size = sizeof(NAME) + sizeof(SIZE) + sizeof(SHA) + strlen(fname)  + strlen(fsize) + strlen(sha);
-    //int i;
-    //for (i = 0; i < cpy_size; ++i) {
-    //    buff_clone[i] = copy_for_crc[i];
-    //}
-    //buff_clone[i] = '\0';
-    //int my_crc = get_crc(buff_clone, strlen(buffer_rx), 0xffff, 0);
-//
-    //printf("%s\n",buff_clone);
-    //printf("%d\n",my_crc);
+    int offset = strlen(copy_for_crc) - (strlen(str_init_crc) + sizeof(CRC));
+    copy_for_crc[offset] = '\0';
+    int my_crc = get_crc(copy_for_crc, strlen(copy_for_crc), 0xffff, 0);
+    if (my_crc == init_crc) {
+        printf("Init CRCs are equal!\n");
+    } else {
+        fprintf(stderr, "Error: init CRCs are not equal!\n");
+        return 1;
+    }
 
 
     // Recieves START flag
@@ -160,14 +154,16 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         write_file(buffer_rx, packet_size, output);
 
 
-        // TODO Proč poslední packet začíná na }?
+        // TODO Proč poslední string s CRC a N začíná na }?
         char *packet_num_and_crc = &(buffer_rx[packet_size]);
+
+
+        // tohle funguje jako záplata, ale asi bychom to měli vyřešit jinak
         if (packet_size == (integer_fsize + sizeof(DATA))) {
             packet_num_and_crc = &(buffer_rx[packet_size + 1]);
+            packet_size += 1;
         }
 
-
-        // TODO coding style
         char *str_packet_num;
         int packet_num;
         strip_res = strip_data(&packet_num_and_crc, (char *)NUMBER, &str_packet_num);
@@ -188,7 +184,23 @@ int receive_file(char *target_ip, int target_port, int local_port) {
             return 1;
         }
 
-        printf("Packet number: %d CRC: %d\n", packet_num, data_crc);
+        //printf("Packet number: %d CRC: %d\n", packet_num, data_crc);
+        char* arr_for_crc = new char[packet_size];
+        for (int i = 0; i < packet_size; ++i) {
+            arr_for_crc[i] = buffer_rx[i];
+        }
+        int my_crc = get_crc(arr_for_crc, packet_size, 0xffff, 0);
+
+        //FILE *f = fopen("my_crc_buf.txt", "w");
+        //fwrite(arr_for_crc, packet_size, 1, f);
+        //fclose(f);
+
+        if (data_crc != my_crc) {
+            fprintf(stderr, "Errror: CRCs are not equal!\n");
+            // send NOT_ACK
+        } else {
+            // send ACK
+        }
 
         integer_fsize -= real_data_size;
     }
