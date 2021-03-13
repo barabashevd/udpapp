@@ -3,6 +3,9 @@
 //
 
 #include "sender.h"
+#include "md5.h"
+
+void add_to_buffer(char *buf, char *name, char *to_write);
 
 int send_file(char *target_ip, char *filename, int target_port, int local_port){
     SOCKET socketS;
@@ -36,32 +39,22 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     FILE *file = fopen(filename, "rb");
     int file_size = get_filesize(file);
-    char sha[] = "test"; // TODO: calculate useful sha value
+    MD5 md5;
+    char *hashed = md5.digestFile(filename);
+    printf("Hashed file: %s\n", hashed);
 
 
-    // Sends filename in NAME={filename}SIZE={size}SHA={sha}CRC={crc}
+    // Sends filename in NAME={filename}SIZE={size}HASH={sha}CRC={crc}
     clear_buffer(buffer_tx, BUFFERS_LEN);
-    // Adds filename to buffer
-    strcpy(buffer_tx, NAME);
-    strcat(buffer_tx, filename);
-    strcat(buffer_tx, "}");
 
-    // Adds filesize to buffer
-    strcat(buffer_tx, SIZE);
-    strcat(buffer_tx, std::to_string(file_size).c_str());
-
-    strcat(buffer_tx, "}");
-
-    // Adds sha of the file
-    strcat(buffer_tx, SHA);
-    strcat(buffer_tx, sha);
-    strcat(buffer_tx, "}");
-
-    // Calculates CRC of the packet
     int init_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
-    strcat(buffer_tx, CRC);
-    strcat(buffer_tx, std::to_string(init_crc).c_str());
-    strcat(buffer_tx, "}");
+
+    add_to_buffer(buffer_tx, NAME, filename);
+    /*
+    add_to_buffer(buffer_tx, SIZE, (char *) std::to_string(file_size).c_str());
+    add_to_buffer(buffer_tx, HASH, hashed);
+    add_to_buffer(buffer_tx, CRC, (char *) std::to_string(init_crc).c_str());
+    */
 
     sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
     printf("Init info sent.\n");
@@ -121,14 +114,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         // Calculate CRC
         clear_buffer(pakcet_tail, CRC_LEN);
         int data_crc = get_crc(buffer_tx, chars_read + sizeof(DATA), 0xffff, 0);
-
-        //FILE *f = fopen("og_crc_buf.txt", "w");
-        //fwrite(buffer_tx, chars_read + sizeof(DATA), 1, f);
-        //fclose(f);
-
-        strcat(pakcet_tail, CRC);
-        strcat(pakcet_tail, std::to_string(data_crc).c_str());
-        strcat(pakcet_tail, "}");
+        add_to_buffer(pakcet_tail, CRC, (char *)  std::to_string(data_crc).c_str());
         tail_len = strlen(pakcet_tail);
 
         for (int i = 0; i < tail_len; i++){
@@ -151,6 +137,12 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     }
     closesocket(socketS);
     return 0;
+}
+
+void add_to_buffer(char *buf, char *name, char *to_write){
+    strcpy(buf, name);
+    strcat(buf, to_write);
+    strcat(buf, "}");
 }
 
 

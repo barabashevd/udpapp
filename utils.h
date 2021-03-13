@@ -12,7 +12,7 @@
 #define DATA "DATA{"
 #define NAME "NAME={"
 #define SIZE "SIZE={"
-#define SHA  "SHA={"
+#define HASH  "MD5={"
 #define NUMBER "N={"
 #define START "START"
 #define STOP "STOP"
