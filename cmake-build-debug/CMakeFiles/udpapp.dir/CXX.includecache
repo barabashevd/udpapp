@@ -6,7 +6,25 @@
 
 #IncludeRegexTransform: 
 
+C:/Users/barab/CLionProjects/udpapp/crc.cpp
+
 C:/Users/barab/CLionProjects/udpapp/crc.h
+
+C:/Users/barab/CLionProjects/udpapp/main.cpp
+stdafx.h
+C:/Users/barab/CLionProjects/udpapp/stdafx.h
+winsock2.h
+-
+ws2tcpip.h
+C:/Users/barab/CLionProjects/udpapp/ws2tcpip.h
+string
+-
+sender.h
+C:/Users/barab/CLionProjects/udpapp/sender.h
+receiver.h
+C:/Users/barab/CLionProjects/udpapp/receiver.h
+utils.h
+C:/Users/barab/CLionProjects/udpapp/utils.h
 
 C:/Users/barab/CLionProjects/udpapp/receiver.cpp
 receiver.h
@@ -28,9 +46,51 @@ C:/Users/barab/CLionProjects/udpapp/crc.h
 utils.h
 C:/Users/barab/CLionProjects/udpapp/utils.h
 
+C:/Users/barab/CLionProjects/udpapp/sender.cpp
+sender.h
+C:/Users/barab/CLionProjects/udpapp/sender.h
+
+C:/Users/barab/CLionProjects/udpapp/sender.h
+stdio.h
+-
+string
+-
+winsock2.h
+-
+ws2tcpip.h
+C:/Users/barab/CLionProjects/udpapp/ws2tcpip.h
+tchar.h
+-
+crc.h
+C:/Users/barab/CLionProjects/udpapp/crc.h
+utils.h
+C:/Users/barab/CLionProjects/udpapp/utils.h
+
+C:/Users/barab/CLionProjects/udpapp/stdafx.cpp
+stdafx.h
+C:/Users/barab/CLionProjects/udpapp/stdafx.h
+
+C:/Users/barab/CLionProjects/udpapp/stdafx.h
+targetver.h
+C:/Users/barab/CLionProjects/udpapp/targetver.h
+stdio.h
+-
+tchar.h
+-
+
+C:/Users/barab/CLionProjects/udpapp/targetver.h
+sdkddkver.h
+-
+
+C:/Users/barab/CLionProjects/udpapp/utils.cpp
+utils.h
+C:/Users/barab/CLionProjects/udpapp/utils.h
+
 C:/Users/barab/CLionProjects/udpapp/utils.h
 stdio.h
 -
 string
+-
+winsock2.h
 -
 

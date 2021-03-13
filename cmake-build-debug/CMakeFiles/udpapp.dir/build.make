@@ -47,10 +47,10 @@ RM = "C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E 
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\AdamC\CLionProjects\udpapp
+CMAKE_SOURCE_DIR = C:\Users\barab\CLionProjects\udpapp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug
+CMAKE_BINARY_DIR = C:\Users\barab\CLionProjects\udpapp\cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles\udpapp.dir\depend.make
@@ -63,116 +63,116 @@ include CMakeFiles\udpapp.dir\flags.make
 
 CMakeFiles\udpapp.dir\main.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\main.cpp.obj: ..\main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/udpapp.dir/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/udpapp.dir/main.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\main.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\main.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\main.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\main.cpp
 <<
 
 CMakeFiles\udpapp.dir\main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/main.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\main.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\main.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\main.cpp
 <<
 
 CMakeFiles\udpapp.dir\main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/main.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\main.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\main.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\main.cpp.s /c C:\Users\barab\CLionProjects\udpapp\main.cpp
 <<
 
 CMakeFiles\udpapp.dir\stdafx.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\stdafx.cpp.obj: ..\stdafx.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/udpapp.dir/stdafx.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/udpapp.dir/stdafx.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\stdafx.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\stdafx.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\stdafx.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\stdafx.cpp
 <<
 
 CMakeFiles\udpapp.dir\stdafx.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/stdafx.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\stdafx.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\stdafx.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\stdafx.cpp
 <<
 
 CMakeFiles\udpapp.dir\stdafx.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/stdafx.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\stdafx.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\stdafx.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\stdafx.cpp.s /c C:\Users\barab\CLionProjects\udpapp\stdafx.cpp
 <<
 
 CMakeFiles\udpapp.dir\crc.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\crc.cpp.obj: ..\crc.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/udpapp.dir/crc.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/udpapp.dir/crc.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\crc.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\crc.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\crc.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\crc.cpp
 <<
 
 CMakeFiles\udpapp.dir\crc.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/crc.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\crc.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\crc.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\crc.cpp
 <<
 
 CMakeFiles\udpapp.dir\crc.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/crc.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\crc.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\crc.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\crc.cpp.s /c C:\Users\barab\CLionProjects\udpapp\crc.cpp
 <<
 
 CMakeFiles\udpapp.dir\sender.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\sender.cpp.obj: ..\sender.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/udpapp.dir/sender.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/udpapp.dir/sender.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\sender.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\sender.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\sender.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\sender.cpp
 <<
 
 CMakeFiles\udpapp.dir\sender.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/sender.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\sender.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\sender.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\sender.cpp
 <<
 
 CMakeFiles\udpapp.dir\sender.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/sender.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\sender.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\sender.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\sender.cpp.s /c C:\Users\barab\CLionProjects\udpapp\sender.cpp
 <<
 
 CMakeFiles\udpapp.dir\utils.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\utils.cpp.obj: ..\utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/udpapp.dir/utils.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/udpapp.dir/utils.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\utils.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\utils.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\utils.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\utils.cpp
 <<
 
 CMakeFiles\udpapp.dir\utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/utils.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\utils.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\utils.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\utils.cpp
 <<
 
 CMakeFiles\udpapp.dir\utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/utils.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\utils.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\utils.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\utils.cpp.s /c C:\Users\barab\CLionProjects\udpapp\utils.cpp
 <<
 
 CMakeFiles\udpapp.dir\receiver.cpp.obj: CMakeFiles\udpapp.dir\flags.make
 CMakeFiles\udpapp.dir\receiver.cpp.obj: ..\receiver.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/udpapp.dir/receiver.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/udpapp.dir/receiver.cpp.obj"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\receiver.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\AdamC\CLionProjects\udpapp\receiver.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoCMakeFiles\udpapp.dir\receiver.cpp.obj /FdCMakeFiles\udpapp.dir\ /FS -c C:\Users\barab\CLionProjects\udpapp\receiver.cpp
 <<
 
 CMakeFiles\udpapp.dir\receiver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/udpapp.dir/receiver.cpp.i"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe > CMakeFiles\udpapp.dir\receiver.cpp.i @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\AdamC\CLionProjects\udpapp\receiver.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\barab\CLionProjects\udpapp\receiver.cpp
 <<
 
 CMakeFiles\udpapp.dir\receiver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/udpapp.dir/receiver.cpp.s"
 	C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\cl.exe @<<
- /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\receiver.cpp.s /c C:\Users\AdamC\CLionProjects\udpapp\receiver.cpp
+ /nologo /TP $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) /FoNUL /FAs /FaCMakeFiles\udpapp.dir\receiver.cpp.s /c C:\Users\barab\CLionProjects\udpapp\receiver.cpp
 <<
 
 # Object files for target udpapp
@@ -195,9 +195,9 @@ udpapp.exe: CMakeFiles\udpapp.dir\utils.cpp.obj
 udpapp.exe: CMakeFiles\udpapp.dir\receiver.cpp.obj
 udpapp.exe: CMakeFiles\udpapp.dir\build.make
 udpapp.exe: CMakeFiles\udpapp.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable udpapp.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable udpapp.exe"
 	"C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\udpapp.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2019\PROFES~1\VC\Tools\MSVC\1428~1.293\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\udpapp.dir\objects1.rsp @<<
- /out:udpapp.exe /implib:udpapp.lib /pdb:C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\udpapp.pdb /version:0.0  /machine:X86 /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
+ /out:udpapp.exe /implib:udpapp.lib /pdb:C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\udpapp.pdb /version:0.0  /machine:X86 /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<
 
 # Rule to build all files generated by this target.
@@ -210,6 +210,6 @@ CMakeFiles\udpapp.dir\clean:
 .PHONY : CMakeFiles\udpapp.dir\clean
 
 CMakeFiles\udpapp.dir\depend:
-	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles" C:\Users\AdamC\CLionProjects\udpapp C:\Users\AdamC\CLionProjects\udpapp C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug C:\Users\AdamC\CLionProjects\udpapp\cmake-build-debug\CMakeFiles\udpapp.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "NMake Makefiles" C:\Users\barab\CLionProjects\udpapp C:\Users\barab\CLionProjects\udpapp C:\Users\barab\CLionProjects\udpapp\cmake-build-debug C:\Users\barab\CLionProjects\udpapp\cmake-build-debug C:\Users\barab\CLionProjects\udpapp\cmake-build-debug\CMakeFiles\udpapp.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles\udpapp.dir\depend
 

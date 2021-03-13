@@ -29,21 +29,6 @@ void clear_buffer(char *b, int len) {
     }
 }
 
-char *get_incoming_ip(in_addr *sin_addr) {
-    char ch1 = sin_addr->S_un.S_un_b.s_b1;
-    char ch2 = sin_addr->S_un.S_un_b.s_b2;
-    char ch3 = sin_addr->S_un.S_un_b.s_b3;
-    char ch4 = sin_addr->S_un.S_un_b.s_b4;
-
-    char addr[8] = {
-            ch1, '.', ch2, '.', ch3, '.', ch4, '\0'
-    };
-
-    printf("get incoming %s \n", addr);
-
-    return addr;
-}
-
 int convert_c_str_to_int(char *c_str_integer) {
     int res = 0;
     std::string cpp_str_tmp = std::string(c_str_integer);

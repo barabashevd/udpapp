@@ -42,24 +42,10 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     printf("Waiting for init info...\n");
     int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
-    printf("DEBUG-----------------\n");
+    addrDest.sin_addr.s_addr = from.sin_addr.S_un.S_addr;
 
-    in_addr f_addr_struc = from.sin_addr;
-
-    unsigned char ch1 = f_addr_struc.S_un.S_un_b.s_b1;
-    unsigned char ch2 = f_addr_struc.S_un.S_un_b.s_b2;
-    unsigned char ch3 = f_addr_struc.S_un.S_un_b.s_b3;
-    unsigned char ch4 = f_addr_struc.S_un.S_un_b.s_b4;
-
-    printf("addr from chars: %u %u %u %u\n", ch1, ch2, ch3, ch4);
-
-    char *u_addr = get_incoming_ip(&from.sin_addr);
-    printf("u addr %s\n", u_addr);
-    InetPton(AF_INET, _T(u_addr), &addrDest.sin_addr.s_addr);
     sendto(socketS, "test", strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
 
-
-    printf("DEBUG-----------------\n");
 
     if (rec_init_info == SOCKET_ERROR) {
         fprintf(stderr, "Socket error!");
@@ -218,7 +204,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         //fclose(f);
 
         if (data_crc != my_crc) {
-            fprintf(stderr, "Errror: CRCs are not equal!\n");
+            fprintf(stderr, "Error: CRCs are not equal!\n");
             // send NOT_ACK
         } else {
             // send ACK

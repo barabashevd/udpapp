@@ -31,8 +31,8 @@ void clear_buffer(char *b, int len);
 int get_filesize(FILE *file);
 
 int write_file(char *buf, int packet_size, FILE *file);
+
 int convert_c_str_to_int(char *str_integer);
 
-char* get_incoming_ip(in_addr *sin_addr);
 
 #endif //UDPAPP_UTILS_H
