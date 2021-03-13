@@ -21,7 +21,6 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     socketS = socket(AF_INET, SOCK_DGRAM, 0);
 
-
     // Binds a socket to a port, fails if the port is in use
     if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
         printf("Binding error!\n");
@@ -42,7 +41,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     addrDest.sin_addr.s_addr = from.sin_addr.S_un.S_addr;
 
     if (rec_init_info == SOCKET_ERROR) {
-        fprintf(stderr, "Socket error!");
+        fprintf(stderr, "Socket error!\n");
         return 1;
     }
 
@@ -50,10 +49,15 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     char copy_for_crc[BUFFERS_LEN];
     strcpy(copy_for_crc, buffer_rx);
 
+    // Goto flag to read init packet again in case of CRC comparison failure
+    read_init_packet_again:
+
+    // FIXME chovani nactenei init neni spolehlive
+
     // Reads file name
-    //-----------------------------------------------------------/
+    //-----------------------------------------------------------
     static char *fname;
-    int strip_res = strip_data(&buff_ptr, (char *)NAME, &fname);
+    int strip_res = strip_data(&buff_ptr, (char *) NAME, &fname);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file name\n");
         return 1;
@@ -63,7 +67,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     //-----------------------------------------------------------
     int integer_fsize;
     char *fsize;
-    strip_res = strip_data(&buff_ptr, (char *)SIZE, &fsize);
+    strip_res = strip_data(&buff_ptr, (char *) SIZE, &fsize);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file size\n");
         return 1;
@@ -72,17 +76,17 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     // Reads sha
     //-----------------------------------------------------------
     char *sha;
-    strip_res = strip_data(&buff_ptr, (char *)HASH, &sha);
+    strip_res = strip_data(&buff_ptr, (char *) HASH, &sha);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read SHA\n");
         return 1;
     }
 
-    // Reads init_crc
+    // Reads init CRC
     //-----------------------------------------------------------
     char *str_init_crc;
     int init_crc;
-    strip_res = strip_data(&buff_ptr, (char *)CRC, &str_init_crc);
+    strip_res = strip_data(&buff_ptr, (char *) CRC, &str_init_crc);
     if (strip_res == 0) {
         init_crc = convert_c_str_to_int(str_init_crc);
     } else {
@@ -90,16 +94,19 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         return 1;
     }
 
-     //init_crc check
+    // Calculates init CRC
+    //-----------------------------------------------------------
     int offset = strlen(copy_for_crc) - (strlen(str_init_crc) + sizeof(CRC));
     copy_for_crc[offset] = '\0';
     int my_crc = get_crc(copy_for_crc, strlen(copy_for_crc), 0xffff, 0);
 
+    // Checks CRC
+    //-----------------------------------------------------------
     FILE *output;
     if (my_crc == init_crc) {
         printf("Init CRCs are equal!\n");
 
-        output = fopen("output.png", "wb");
+        output = fopen("output.txt", "wb");
         printf("File name: %s\n", fname);
 
         integer_fsize = convert_c_str_to_int(fsize);
@@ -109,24 +116,33 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
     } else {
-        sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-        printf( "Init CRCs are not equal! - packet not accepted\n");
-
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        printf("Init CRCs are not equal! - packet not accepted\n");
+        goto read_init_packet_again;
     }
 
     // Recieves START flag
     // -----------------------------------------------------------------
+    read_start_flag_again:
+
     clear_buffer(buffer_rx, BUFFERS_LEN);
     printf("Waiting for start flag...\n");
     int rec_start = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                              0, (struct sockaddr *) &from,
                              &from_len);
 
-    if (rec_start != SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
-        printf("Start flag received - ready for data\n");
-    } else {
+    if (rec_start == SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
         fprintf(stderr, "Socket error.\n");
         return 1;
+
+    } else if (strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
+        printf("Start flag received - ready for data\n");
+        sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+
+    } else {
+        printf("Didn't receive START flag! - packet not accepted\n");
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_start_flag_again;
     }
 
     // Reads data
@@ -156,17 +172,19 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         // tohle funguje jako záplata, ale asi bychom to měli vyřešit jinak
         // smazat jen tohle
+
         bool flag = false;
         if (packet_size == (integer_fsize + sizeof(DATA))) {
             packet_num_and_crc = &(buffer_rx[packet_size + 1]);
             packet_size += 1;
             flag = true;
         }
+
         // end
 
         char *str_packet_num;
         int packet_num;
-        strip_res = strip_data(&packet_num_and_crc, (char *)NUMBER, &str_packet_num);
+        strip_res = strip_data(&packet_num_and_crc, (char *) NUMBER, &str_packet_num);
         if (strip_res != 0) {
             fprintf(stderr, "Error: cannot read packet number\n");
             return 1;
@@ -174,7 +192,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         char *str_data_crc;
         int data_crc;
-        strip_res = strip_data(&packet_num_and_crc, (char *)CRC, &str_data_crc);
+        strip_res = strip_data(&packet_num_and_crc, (char *) CRC, &str_data_crc);
         if (strip_res == 0) {
             data_crc = convert_c_str_to_int(str_data_crc);
         } else {
@@ -183,29 +201,29 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         }
 
         //printf("Packet number: %d CRC: %d\n", packet_num, data_crc);
-        char* arr_for_crc = new char[packet_size];
+        char *arr_for_crc = new char[packet_size];
         for (int i = 0; i < packet_size; ++i) {
             arr_for_crc[i] = buffer_rx[i];
         }
-        int my_crc = get_crc(arr_for_crc, packet_size, 0xffff, 0);
 
-        //FILE *f = fopen("my_crc_buf.txt", "w");
-        //fwrite(arr_for_crc, packet_size, 1, f);
-        //fclose(f);
+        int my_crc = get_crc(arr_for_crc, packet_size, 0xffff, 0);
 
         if (data_crc == my_crc) {
             // TODO další záplata pro poslední packet (pak vymazat)
+
             if (flag) {
                 packet_size -= 1;
             }
+
             write_file(buffer_rx, packet_size, output);
             packet_num = convert_c_str_to_int(str_packet_num);
+            printf("Packet number: %i\n", packet_num);
 
-            sendto(socketS, ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            sendto(socketS, ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         } else {
-            sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-            printf( "CRCs are not equal! - packet not accepted\n");
-            // send NOT_ACK
+            sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            printf("CRCs are not equal! - packet not accepted\n");
+            continue;
         }
 
         integer_fsize -= real_data_size;
@@ -213,8 +231,25 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     fclose(output);
     closesocket(socketS);
 
+    // FIXME
+    /*
+    MD5 md5;
+    char *hashed = md5.digestFile("output.txt");
+    sha[sizeof(sha)] = '\0';
+    printf("Hashed file: %s\n", hashed);
+    printf("SHA: %s %i\n", sha, sizeof(sha));
+    if (strcmp(hashed, sha) == 0){
+        printf("Huraa, soubory jsou stejne.\n");
+    } else {
+        printf("Files are not the same. %i\n", strcmp(hashed, sha));
+        printf( "%s\n", hashed);
+        printf("%s\n", sha);
+    }
+    */
+
     return 0;
 }
+
 
 int strip_data(char **buff_ptr, char *tag, char **data) {
     int ret = 0;

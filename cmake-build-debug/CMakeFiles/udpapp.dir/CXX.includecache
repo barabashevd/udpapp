@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/AdamC/CLionProjects/udpapp/crc.h
+
+C:/Users/AdamC/CLionProjects/udpapp/receiver.cpp
+receiver.h
+C:/Users/AdamC/CLionProjects/udpapp/receiver.h
+
+C:/Users/AdamC/CLionProjects/udpapp/receiver.h
+stdio.h
+-
+string
+-
+winsock2.h
+-
+ws2tcpip.h
+C:/Users/AdamC/CLionProjects/udpapp/ws2tcpip.h
+tchar.h
+-
+crc.h
+C:/Users/AdamC/CLionProjects/udpapp/crc.h
+utils.h
+C:/Users/AdamC/CLionProjects/udpapp/utils.h
+
+C:/Users/AdamC/CLionProjects/udpapp/utils.h
+stdio.h
+-
+string
+-
+winsock2.h
+-
+

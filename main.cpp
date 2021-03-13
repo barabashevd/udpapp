@@ -79,14 +79,14 @@ int main(int argc, char *argv[]) {
         result = send_file(target_ip, filename, target_port, local_port);
 
         if(result != 0){
-            printf("Sorry, something went wrong. ERRNO = %i", result);
+            printf("Sorry, something went wrong. ERRNO = %i\n", result);
         }
 
     } else {
         result = receive_file(target_ip, target_port, local_port);
 
         if (result) {
-            printf("Sorry, something went wrong. ERRNO = %i", result);
+            printf("Sorry, something went wrong. ERRNO = %i\n", result);
         }
     }
 

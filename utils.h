@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string>
 #include <winsock2.h>
+#include "md5.h"
 
 #define DATA "DATA{"
 #define NAME "NAME={"
