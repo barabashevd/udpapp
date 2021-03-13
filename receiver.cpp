@@ -36,15 +36,13 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     char buffer_rx[BUFFERS_LEN];
 
     //-----------------------------------------------------------
-    FILE *output;
-
     clear_buffer(buffer_rx, BUFFERS_LEN);
     printf("Waiting for init info...\n");
     int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
     addrDest.sin_addr.s_addr = from.sin_addr.S_un.S_addr;
 
-    sendto(socketS, "test", strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+    //sendto(socketS, "test", strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
 
 
     if (rec_init_info == SOCKET_ERROR) {
@@ -60,26 +58,17 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     //-----------------------------------------------------------/
     static char *fname;
     int strip_res = strip_data(&buff_ptr, (char *)NAME, &fname);
-    if (strip_res == 0) {
-        output = fopen("output.png", "wb");
-        printf("File name: %s\n", fname);
-    } else {
+    if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file name\n");
         return 1;
     }
-
-    // Sends ACK for filename
-    // sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
 
     // Reads file size
     //-----------------------------------------------------------
     int integer_fsize;
     char *fsize;
     strip_res = strip_data(&buff_ptr, (char *)SIZE, &fsize);
-    if (strip_res == 0) {
-        integer_fsize = convert_c_str_to_int(fsize);
-        printf("File size: %d\n", integer_fsize);
-    } else {
+    if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file size\n");
         return 1;
     }
@@ -88,9 +77,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     //-----------------------------------------------------------
     char *sha;
     strip_res = strip_data(&buff_ptr, (char *)SHA, &sha);
-    if (strip_res == 0) {
-        printf("SHA: %s\n", sha);
-    } else {
+    if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read SHA\n");
         return 1;
     }
@@ -102,8 +89,6 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     strip_res = strip_data(&buff_ptr, (char *)CRC, &str_init_crc);
     if (strip_res == 0) {
         init_crc = convert_c_str_to_int(str_init_crc);
-        //printf("CRC: %d\n", init_crc);
-        //printf("STR CRC: %s\n", str_init_crc);
     } else {
         fprintf(stderr, "Error: cannot read CRC\n");
         return 1;
@@ -113,13 +98,22 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     int offset = strlen(copy_for_crc) - (strlen(str_init_crc) + sizeof(CRC));
     copy_for_crc[offset] = '\0';
     int my_crc = get_crc(copy_for_crc, strlen(copy_for_crc), 0xffff, 0);
+
+    FILE *output;
     if (my_crc == init_crc) {
         printf("Init CRCs are equal!\n");
+
+        output = fopen("output.png", "wb");
+        printf("File name: %s\n", fname);
+
+        integer_fsize = convert_c_str_to_int(fsize);
+        printf("File size: %d\n", integer_fsize);
+
+        printf("SHA: %s\n", sha);
     } else {
         fprintf(stderr, "Error: init CRCs are not equal!\n");
         return 1;
     }
-
 
     // Recieves START flag
     // -----------------------------------------------------------------
@@ -156,28 +150,25 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         int real_data_size = BUFFERS_LEN - sizeof(DATA) - CRC_LEN; // odecitani a pricitani jednicky = 0
         int packet_size = integer_fsize > real_data_size ? (BUFFERS_LEN - CRC_LEN) : (integer_fsize + sizeof(DATA));
-        write_file(buffer_rx, packet_size, output);
 
 
         // TODO Proč poslední string s CRC a N začíná na }?
         char *packet_num_and_crc = &(buffer_rx[packet_size]);
 
-
         // tohle funguje jako záplata, ale asi bychom to měli vyřešit jinak
         // smazat jen tohle
+        bool flag = false;
         if (packet_size == (integer_fsize + sizeof(DATA))) {
             packet_num_and_crc = &(buffer_rx[packet_size + 1]);
             packet_size += 1;
+            flag = true;
         }
         // end
-
 
         char *str_packet_num;
         int packet_num;
         strip_res = strip_data(&packet_num_and_crc, (char *)NUMBER, &str_packet_num);
-        if (strip_res == 0) {
-            packet_num = convert_c_str_to_int(str_packet_num);
-        } else {
+        if (strip_res != 0) {
             fprintf(stderr, "Error: cannot read packet number\n");
             return 1;
         }
@@ -203,11 +194,19 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         //fwrite(arr_for_crc, packet_size, 1, f);
         //fclose(f);
 
-        if (data_crc != my_crc) {
-            fprintf(stderr, "Error: CRCs are not equal!\n");
-            // send NOT_ACK
+        if (data_crc == my_crc) {
+            // TODO další záplata pro poslední packet (pak vymazat)
+            if (flag) {
+                packet_size -= 1;
+            }
+            write_file(buffer_rx, packet_size, output);
+            packet_num = convert_c_str_to_int(str_packet_num);
+
+            sendto(socketS, ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         } else {
-            // send ACK
+            sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            printf( "CRCs are not equal! - packet not accepted\n");
+            // send NOT_ACK
         }
 
         integer_fsize -= real_data_size;

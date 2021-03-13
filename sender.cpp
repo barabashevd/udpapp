@@ -119,7 +119,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         pos += tail_len;
 
         // Calculate CRC
-        // TODO proč nefunguje chars_read + sizeof(DATA) + sizeof('}')?
         clear_buffer(pakcet_tail, CRC_LEN);
         int data_crc = get_crc(buffer_tx, chars_read + sizeof(DATA), 0xffff, 0);
 
