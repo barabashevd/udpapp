@@ -4,10 +4,6 @@
 
 #include "utils.h"
 
-void clear_buffer(char *b, int len);
-int get_filesize(FILE *file);
-int write_file(char *buf, int packet_size, FILE *file);
-
 int get_filesize(FILE *file) {
     fseek(file, 0L, SEEK_END);
     int size = ftell(file);
@@ -31,6 +27,21 @@ void clear_buffer(char *b, int len) {
     for (int i = 0; i < len; i++) {
         b[i] = '\0';
     }
+}
+
+char *get_incoming_ip(in_addr *sin_addr) {
+    char ch1 = sin_addr->S_un.S_un_b.s_b1;
+    char ch2 = sin_addr->S_un.S_un_b.s_b2;
+    char ch3 = sin_addr->S_un.S_un_b.s_b3;
+    char ch4 = sin_addr->S_un.S_un_b.s_b4;
+
+    char addr[8] = {
+            ch1, '.', ch2, '.', ch3, '.', ch4, '\0'
+    };
+
+    printf("get incoming %s \n", addr);
+
+    return addr;
 }
 
 int convert_c_str_to_int(char *c_str_integer) {

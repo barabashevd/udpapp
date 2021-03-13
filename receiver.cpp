@@ -31,7 +31,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     sockaddr_in addrDest{};
     addrDest.sin_family = AF_INET;
     addrDest.sin_port = htons(target_port);
-    InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
+    // InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
     char buffer_rx[BUFFERS_LEN];
 
@@ -41,6 +41,25 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     clear_buffer(buffer_rx, BUFFERS_LEN);
     printf("Waiting for init info...\n");
     int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
+
+    printf("DEBUG-----------------\n");
+
+    in_addr f_addr_struc = from.sin_addr;
+
+    unsigned char ch1 = f_addr_struc.S_un.S_un_b.s_b1;
+    unsigned char ch2 = f_addr_struc.S_un.S_un_b.s_b2;
+    unsigned char ch3 = f_addr_struc.S_un.S_un_b.s_b3;
+    unsigned char ch4 = f_addr_struc.S_un.S_un_b.s_b4;
+
+    printf("addr from chars: %u %u %u %u\n", ch1, ch2, ch3, ch4);
+
+    char *u_addr = get_incoming_ip(&from.sin_addr);
+    printf("u addr %s\n", u_addr);
+    InetPton(AF_INET, _T(u_addr), &addrDest.sin_addr.s_addr);
+    sendto(socketS, "test", strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+
+
+    printf("DEBUG-----------------\n");
 
     if (rec_init_info == SOCKET_ERROR) {
         fprintf(stderr, "Socket error!");
@@ -159,10 +178,13 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
 
         // tohle funguje jako záplata, ale asi bychom to měli vyřešit jinak
+        // smazat jen tohle
         if (packet_size == (integer_fsize + sizeof(DATA))) {
             packet_num_and_crc = &(buffer_rx[packet_size + 1]);
             packet_size += 1;
         }
+        // end
+
 
         char *str_packet_num;
         int packet_num;

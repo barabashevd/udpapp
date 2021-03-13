@@ -84,8 +84,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
 
     int read;
     int counter = 0;
-    int crc_size = CRC_LEN + 1; // celkem random hodnota
-
+    int crc_size = CRC_LEN + 1;
     // Data are sent in format: DATA{data...}NUMBER={n}CRC={crc}
 
     while (!feof(file)) {
@@ -111,7 +110,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         strcat(pakcet_tail, std::to_string(counter).c_str());
         strcat(pakcet_tail, "}");
         int tail_len = strlen(pakcet_tail);
-        // printf("tail: %s", pakcet_tail);
         counter++;
 
         for (int i = 0; i < tail_len; i++){
