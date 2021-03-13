@@ -4,21 +4,32 @@
 
 #include "sender.h"
 
-int send_file(char *target_ip, char *filename, int target_port, int local_port){
-    SOCKET socketS;
+void add_to_buffer(char *buf, char *name, char *to_write);
 
+int send_data_and_wait(char *buf, int buf_len, char *flag);
+
+SOCKET socketS;
+sockaddr_in addrDest{};
+
+char buffer_tx[BUFFERS_LEN];
+char response[100];
+
+struct sockaddr_in local{};
+struct sockaddr_in from{};
+int from_len = sizeof(from);
+
+int send_file(char *target_ip, char *filename, int target_port, int local_port) {
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-    struct sockaddr_in local{};
-    struct sockaddr_in from{};
-
-    int from_len = sizeof(from);
     local.sin_family = AF_INET;
     local.sin_port = htons(local_port);
     local.sin_addr.s_addr = INADDR_ANY;
 
     socketS = socket(AF_INET, SOCK_DGRAM, 0);
+
+    DWORD read_timeout = 10000;
+    setsockopt(socketS, SOL_SOCKET, SO_RCVTIMEO, (char *) &read_timeout, sizeof read_timeout);
 
     // Binds a socket to a port, fails if the port is in use
     if (bind(socketS, (sockaddr *) &local, sizeof(local)) != 0) {
@@ -26,116 +37,80 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
         return 1;
     }
 
-    sockaddr_in addrDest{};
+
     addrDest.sin_family = AF_INET;
     addrDest.sin_port = htons(target_port);
     InetPton(AF_INET, _T(target_ip), &addrDest.sin_addr.s_addr);
 
-    char buffer_tx[BUFFERS_LEN];
-    char response[100];
 
     FILE *file = fopen(filename, "rb");
     int file_size = get_filesize(file);
-    char sha[] = "test"; // TODO: calculate useful sha value
+
+    MD5 md5;
+    char *hashed = md5.digestFile(filename);
+    printf("Hashed file: %s\n", hashed);
 
 
-    // Sends filename in NAME={filename}SIZE={size}SHA={sha}CRC={crc}
+    // Sends filename in NAME={filename}SIZE={size}HASH={sha}CRC={crc}
     clear_buffer(buffer_tx, BUFFERS_LEN);
-    // Adds filename to buffer
-    strcpy(buffer_tx, NAME);
-    strcat(buffer_tx, filename);
-    strcat(buffer_tx, "}");
 
-    // Adds filesize to buffer
-    strcat(buffer_tx, SIZE);
-    strcat(buffer_tx, std::to_string(file_size).c_str());
+    add_to_buffer(buffer_tx, NAME, filename);
+    add_to_buffer(buffer_tx, SIZE, (char *)std::to_string(file_size).c_str());
+    add_to_buffer(buffer_tx, HASH, hashed);
 
-    strcat(buffer_tx, "}");
-
-    // Adds sha of the file
-    strcat(buffer_tx, SHA);
-    strcat(buffer_tx, sha);
-    strcat(buffer_tx, "}");
-
-    // Calculates CRC of the packet
     int init_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
-    strcat(buffer_tx, CRC);
-    strcat(buffer_tx, std::to_string(init_crc).c_str());
-    strcat(buffer_tx, "}");
+    add_to_buffer(buffer_tx, CRC, (char *) std::to_string(init_crc).c_str());
+    send_data_and_wait(buffer_tx, strlen(buffer_tx), "INIT");
+    send_data_and_wait(START, strlen(START), START);
 
-    sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-    printf("Init info sent.\n");
-
-    // TODO: add timeout
-    /*
-    int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
-    if (wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0){
-        printf("ACK for filename received, %s\n", response);
-    }
-    */
-
-    // Sends start flag
-    clear_buffer(buffer_tx, BUFFERS_LEN);
-    strcpy(buffer_tx, START);
-    sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
-    printf("Start flag sent.\n");
-
-    // Wait for ACK for start flag TODO
 
     int read;
     int counter = 0;
     int crc_size = CRC_LEN + 1;
-    // Data are sent in format: DATA{data...}NUMBER={n}CRC={crc}
 
+    // Data are sent in format: DATA{data...}NUMBER={n}CRC={crc}
     while (!feof(file)) {
         clear_buffer(buffer_tx, BUFFERS_LEN);
         strcpy(buffer_tx, DATA);
         int chars_read = 0;
         int pos;
 
-        for (pos = sizeof(DATA) - 1; pos < BUFFERS_LEN - crc_size ; pos++) {
+        for (pos = sizeof(DATA) - 1; pos < BUFFERS_LEN - crc_size; pos++) {
             if (!feof(file)) {
                 *(buffer_tx + pos) = fgetc(file);
                 chars_read += 1;
             } else {
                 printf("End of file reached.\n");
+                // pos--;
                 break;
             }
         }
 
-        char pakcet_tail[CRC_LEN + 1];
+        char packet_tail[CRC_LEN + 1];
         // Add packet number
-        strcpy(pakcet_tail, "}");
-        strcat(pakcet_tail, NUMBER);
-        strcat(pakcet_tail, std::to_string(counter).c_str());
-        strcat(pakcet_tail, "}");
-        int tail_len = strlen(pakcet_tail);
+        strcpy(packet_tail, "}");
+        add_to_buffer(packet_tail, NUMBER, (char *) std::to_string(counter).c_str());
+
+        int tail_len = strlen(packet_tail);
         counter++;
 
-        for (int i = 0; i < tail_len; i++){
-            *(buffer_tx + pos + i) = *(pakcet_tail + i);
+        for (int i = 0; i < tail_len; i++) {
+            *(buffer_tx + pos + i) = *(packet_tail + i);
         }
 
         pos += tail_len;
 
         // Calculate CRC
-        clear_buffer(pakcet_tail, CRC_LEN);
+        clear_buffer(packet_tail, CRC_LEN);
         int data_crc = get_crc(buffer_tx, chars_read + sizeof(DATA), 0xffff, 0);
+        add_to_buffer(packet_tail, CRC, (char *)  std::to_string(data_crc).c_str());
 
-        //FILE *f = fopen("og_crc_buf.txt", "w");
-        //fwrite(buffer_tx, chars_read + sizeof(DATA), 1, f);
-        //fclose(f);
-
-        strcat(pakcet_tail, CRC);
-        strcat(pakcet_tail, std::to_string(data_crc).c_str());
-        strcat(pakcet_tail, "}");
-        tail_len = strlen(pakcet_tail);
-
-        for (int i = 0; i < tail_len; i++){
-            *(buffer_tx + pos + i) = *(pakcet_tail + i);
+        tail_len = strlen(packet_tail);
+        for (int i = 0; i < tail_len; i++) {
+            *(buffer_tx + pos + i) = *(packet_tail + i);
         }
 
-        sendto(socketS, buffer_tx, BUFFERS_LEN, 0, (struct sockaddr *) &addrDest, sizeof(addrDest));
+        send_data_and_wait(buffer_tx, BUFFERS_LEN, NULL);
     }
 
     // Sends stop flag
@@ -144,7 +119,6 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
     printf("Stop flag sent.\n");
 
-    // TODO: wait for ACK for STOP flag
 
     if (file != nullptr) {
         fclose(file);
@@ -153,7 +127,27 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port){
     return 0;
 }
 
+void add_to_buffer(char *buf, char *name, char *to_write) {
+    strcat(buf, name);
+    strcat(buf, to_write);
+    strcat(buf, "}");
+}
 
+int send_data_and_wait(char *buf, int buf_len, char *flag) {
+    sendto(socketS, buf, buf_len, 0, (sockaddr *) &addrDest, sizeof(addrDest));
+    printf("Packet sent. %s\n", flag);
+
+    int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
+    while (!(wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0)) {
+        printf("ACK not received or dataloss occurred. Resending packet..\n");
+        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
+    }
+    if (flag != NULL) {
+        printf("ACK %s received.\n", flag);
+    }
+    return 1;
+}
 
 
 
