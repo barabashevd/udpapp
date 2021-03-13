@@ -54,8 +54,11 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     char copy_for_crc[BUFFERS_LEN];
     strcpy(copy_for_crc, buffer_rx);
 
+    // Goto flag to read init packet again in case of CRC comparison failure
+    read_init_packet_again:
+
     // Reads file name
-    //-----------------------------------------------------------/
+    //-----------------------------------------------------------
     static char *fname;
     int strip_res = strip_data(&buff_ptr, (char *)NAME, &fname);
     if (strip_res != 0) {
@@ -82,7 +85,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         return 1;
     }
 
-    // Reads init_crc
+    // Reads init CRC
     //-----------------------------------------------------------
     char *str_init_crc;
     int init_crc;
@@ -94,11 +97,14 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         return 1;
     }
 
-     //init_crc check
+    // Calculates init CRC
+    //-----------------------------------------------------------
     int offset = strlen(copy_for_crc) - (strlen(str_init_crc) + sizeof(CRC));
     copy_for_crc[offset] = '\0';
     int my_crc = get_crc(copy_for_crc, strlen(copy_for_crc), 0xffff, 0);
 
+    // Checks CRC
+    //-----------------------------------------------------------
     FILE *output;
     if (my_crc == init_crc) {
         printf("Init CRCs are equal!\n");
@@ -115,22 +121,31 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     } else {
         sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         printf( "Init CRCs are not equal! - packet not accepted\n");
-
+        goto read_init_packet_again;
     }
 
     // Recieves START flag
     // -----------------------------------------------------------------
+    read_start_flag_again:
+
     clear_buffer(buffer_rx, BUFFERS_LEN);
     printf("Waiting for start flag...\n");
     int rec_start = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
                              0, (struct sockaddr *) &from,
                              &from_len);
 
-    if (rec_start != SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
-        printf("Start flag received - ready for data\n");
-    } else {
+    if (rec_start == SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
         fprintf(stderr, "Socket error.\n");
         return 1;
+
+    } else if (strncmp(buffer_rx, START, sizeof(START) - 1) == 0){
+        printf("Start flag received - ready for data\n");
+        sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+
+    } else {
+        printf( "Didn't receive START flag! - packet not accepted\n");
+        sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_start_flag_again;
     }
 
     // Reads data
@@ -209,6 +224,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         } else {
             sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
             printf( "CRCs are not equal! - packet not accepted\n");
+            continue;
             // send NOT_ACK
         }
 
