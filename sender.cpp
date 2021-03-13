@@ -55,7 +55,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port) 
     clear_buffer(buffer_tx, BUFFERS_LEN);
 
     add_to_buffer(buffer_tx, NAME, filename);
-    add_to_buffer(buffer_tx, SIZE, (char *)std::to_string(file_size).c_str());
+    add_to_buffer(buffer_tx, SIZE, (char *) std::to_string(file_size).c_str());
     add_to_buffer(buffer_tx, HASH, hashed);
 
     int init_crc = get_crc(buffer_tx, strlen(buffer_tx), 0xffff, 0);
@@ -103,7 +103,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port) 
         // Calculate CRC
         clear_buffer(packet_tail, CRC_LEN);
         int data_crc = get_crc(buffer_tx, chars_read + sizeof(DATA), 0xffff, 0);
-        add_to_buffer(packet_tail, CRC, (char *)  std::to_string(data_crc).c_str());
+        add_to_buffer(packet_tail, CRC, (char *) std::to_string(data_crc).c_str());
 
         tail_len = strlen(packet_tail);
         for (int i = 0; i < tail_len; i++) {
@@ -139,7 +139,11 @@ int send_data_and_wait(char *buf, int buf_len, char *flag) {
 
     int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
     while (!(wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0)) {
-        printf("ACK not received or dataloss occurred. Resending packet..\n");
+        if (strncmp(response, NOT_ACK, sizeof(NOT_ACK) - 1) == 0) {
+            printf("Received NOT ACK, resending packet");
+        } else {
+            printf("ACK not received or dataloss occurred. Resending packet..\n");
+        }
         sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
     }

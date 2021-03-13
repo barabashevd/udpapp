@@ -147,6 +147,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     // Reads data
     // -----------------------------------------------------------------
+    int counter = 0;
     while (true) {
         clear_buffer(buffer_rx, BUFFERS_LEN);
         int rec = recvfrom(socketS, buffer_rx, sizeof(buffer_rx),
@@ -214,10 +215,16 @@ int receive_file(char *target_ip, int target_port, int local_port) {
             if (flag) {
                 packet_size -= 1;
             }
+            packet_num = convert_c_str_to_int(str_packet_num);
+
+            // Check for correct packet
+            if (packet_num < counter) {
+                continue;
+            }
+            counter++;
+            printf("Packet number: %i\n", packet_num);
 
             write_file(buffer_rx, packet_size, output);
-            packet_num = convert_c_str_to_int(str_packet_num);
-            printf("Packet number: %i\n", packet_num);
 
             sendto(socketS, ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         } else {
