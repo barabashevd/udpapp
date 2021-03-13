@@ -110,9 +110,12 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         printf("File size: %d\n", integer_fsize);
 
         printf("SHA: %s\n", sha);
+
+        sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
     } else {
-        fprintf(stderr, "Error: init CRCs are not equal!\n");
-        return 1;
+        sendto(socketS, NOT_ACK, strlen("test"), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        printf( "Init CRCs are not equal! - packet not accepted\n");
+
     }
 
     // Recieves START flag
@@ -216,7 +219,6 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     return 0;
 }
-
 
 int strip_data(char **buff_ptr, char *tag, char **data) {
     int ret = 0;
