@@ -145,13 +145,17 @@ int receive_file(char *target_ip, int target_port, int local_port) {
                              0, (struct sockaddr *) &from,
                              &from_len);
 
-    if (rec_start == SOCKET_ERROR && strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
+    if (rec_start == SOCKET_ERROR) {
         fprintf(stderr, "Socket error.\n");
         return 1;
 
     } else if (strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
         printf("Start flag received - ready for data\n");
         sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+
+    } else if (strncmp(buffer_rx, NAME, sizeof(NAME) - 1) == 0) {
+        sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_start_flag_again;
 
     } else {
         printf("Didn't receive START flag! - packet not accepted\n");
@@ -175,6 +179,12 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         if (strncmp(buffer_rx, STOP, sizeof(STOP) - 1) == 0) {
             printf("Stop flag received!\n");
+            sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            break;
+        }
+
+        if (strncmp(buffer_rx, START, sizeof(START) - 1) == 0) {
+            //printf("Stop flag received!\n");
             sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
             break;
         }
@@ -262,7 +272,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     //received_md5[sizeof(received_md5)] = '\0';
     //printf("Computed MD5: %s\n", hashed);
     //printf("Received MD5: %s \n", received_md5);
-    printf("File name: %s\n", fname);
+    //printf("File name: %s\n", fname);
     printf("Stored file name: %s\n", stored_fname);
     int res = strcmp(test_md5, hashed);
     if (res == 0){
