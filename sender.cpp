@@ -140,11 +140,11 @@ int send_data_and_wait(char *buf, int buf_len, char *flag) {
     int wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
     while (!(wait != SOCKET_ERROR && strncmp(response, ACK, sizeof(ACK) - 1) == 0)) {
         if (strncmp(response, NOT_ACK, sizeof(NOT_ACK) - 1) == 0) {
-            printf("Received NOT ACK, resending packet");
+            printf("Received NOT ACK, resending packet.\n");
         } else {
             printf("ACK not received or dataloss occurred. Resending packet..\n");
         }
-        sendto(socketS, buffer_tx, strlen(buffer_tx), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        sendto(socketS, buf, buf_len, 0, (sockaddr *) &addrDest, sizeof(addrDest));
         wait = recvfrom(socketS, response, sizeof(response), 0, (struct sockaddr *) &from, &from_len);
     }
     if (flag != NULL) {

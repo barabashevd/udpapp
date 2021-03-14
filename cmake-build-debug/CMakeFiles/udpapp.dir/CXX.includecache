@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/AdamC/CLionProjects/udpapp/crc.h
+C:/Users/barab/CLionProjects/udpapp/crc.h
 
-C:/Users/AdamC/CLionProjects/udpapp/md5.h
+C:/Users/barab/CLionProjects/udpapp/md5.h
 
-C:/Users/AdamC/CLionProjects/udpapp/receiver.cpp
-receiver.h
-C:/Users/AdamC/CLionProjects/udpapp/receiver.h
+C:/Users/barab/CLionProjects/udpapp/sender.cpp
+sender.h
+C:/Users/barab/CLionProjects/udpapp/sender.h
 
-C:/Users/AdamC/CLionProjects/udpapp/receiver.h
+C:/Users/barab/CLionProjects/udpapp/sender.h
 stdio.h
 -
 string
@@ -22,15 +22,15 @@ string
 winsock2.h
 -
 ws2tcpip.h
-C:/Users/AdamC/CLionProjects/udpapp/ws2tcpip.h
+C:/Users/barab/CLionProjects/udpapp/ws2tcpip.h
 tchar.h
 -
 crc.h
-C:/Users/AdamC/CLionProjects/udpapp/crc.h
+C:/Users/barab/CLionProjects/udpapp/crc.h
 utils.h
-C:/Users/AdamC/CLionProjects/udpapp/utils.h
+C:/Users/barab/CLionProjects/udpapp/utils.h
 
-C:/Users/AdamC/CLionProjects/udpapp/utils.h
+C:/Users/barab/CLionProjects/udpapp/utils.h
 stdio.h
 -
 string
@@ -38,5 +38,5 @@ string
 winsock2.h
 -
 md5.h
-C:/Users/AdamC/CLionProjects/udpapp/md5.h
+C:/Users/barab/CLionProjects/udpapp/md5.h
 

@@ -55,8 +55,8 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i], SENDER_FLAG) == 0) {
             printf("App in sender mode.\n");
             sender = true;
-            target_port = RECEIVER_PORT;
-            local_port = SENDER_PORT;
+            target_port = 15000;
+            local_port = 14000;
         }
         if (strcmp(argv[i], IP_FLAG) == 0) {
             target_ip = argv[++i];
