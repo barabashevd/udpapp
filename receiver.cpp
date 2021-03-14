@@ -35,7 +35,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     //-----------------------------------------------------------
     clear_buffer(buffer_rx, BUFFERS_LEN);
-    printf("Waiting for init info...\n");
+    //printf("Waiting for init info...\n");
     int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
     addrDest.sin_addr.s_addr = from.sin_addr.S_un.S_addr;
@@ -51,7 +51,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     // Goto flag to read init packet again in case of CRC comparison failure
     read_init_packet_again:
-
+    printf("Waiting for init info...\n");
     // FIXME chovani nacteni init neni spolehlive
 
     // Reads file name
@@ -60,7 +60,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     int strip_res = strip_data(&buff_ptr, (char *) NAME, &fname);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file name\n");
-        return 1;
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_init_packet_again;
     }
 
     // Reads file size
@@ -70,7 +71,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     strip_res = strip_data(&buff_ptr, (char *) SIZE, &fsize);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read file size\n");
-        return 1;
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_init_packet_again;
     }
 
     // Reads received_md5
@@ -79,7 +81,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     strip_res = strip_data(&buff_ptr, (char *) HASH, &received_md5);
     if (strip_res != 0) {
         fprintf(stderr, "Error: cannot read MD5\n");
-        return 1;
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_init_packet_again;
     }
 
     // Reads init CRC
@@ -91,7 +94,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         init_crc = convert_c_str_to_int(str_init_crc);
     } else {
         fprintf(stderr, "Error: cannot read CRC\n");
-        return 1;
+        sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+        goto read_init_packet_again;
     }
 
     // Calculates init CRC
@@ -107,7 +111,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     if (my_crc == init_crc) {
         printf("Init CRCs are equal!\n");
 
-        output = fopen("output.png", "wb");
+        output = fopen(fname, "wb");
         printf("File name: %s\n", fname);
 
         integer_fsize = convert_c_str_to_int(fsize);
@@ -193,7 +197,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         strip_res = strip_data(&packet_num_and_crc, (char *) NUMBER, &str_packet_num);
         if (strip_res != 0) {
             fprintf(stderr, "Error: cannot read packet number\n");
-            return 1;
+            sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            continue;
         }
 
         char *str_data_crc;
@@ -203,7 +208,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
             data_crc = convert_c_str_to_int(str_data_crc);
         } else {
             fprintf(stderr, "Error: cannot read data CRC\n");
-            return 1;
+            sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            continue;
         }
 
         //printf("Packet number: %d CRC: %d\n", packet_num, data_crc);
@@ -227,7 +233,6 @@ int receive_file(char *target_ip, int target_port, int local_port) {
                 continue;
             }
             counter++;
-            //printf("Packet number: %i\n", packet_num);
 
             write_file(buffer_rx, packet_size, output);
 
@@ -246,7 +251,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     // FIXME
     MD5 my_md5;
-    char *hashed = my_md5.digestFile("output.png");
+    char *hashed = my_md5.digestFile(stored_fname);
     //received_md5[sizeof(received_md5)] = '\0';
     //printf("Computed MD5: %s\n", hashed);
     //printf("Received MD5: %s \n", received_md5);

@@ -81,7 +81,7 @@ int send_file(char *target_ip, char *filename, int target_port, int local_port) 
                 chars_read += 1;
             } else {
                 printf("End of file reached.\n");
-                // pos--;
+                //pos--;
                 break;
             }
         }
