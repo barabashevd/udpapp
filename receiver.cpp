@@ -52,7 +52,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     // Goto flag to read init packet again in case of CRC comparison failure
     read_init_packet_again:
 
-    // FIXME chovani nactenei init neni spolehlive
+    // FIXME chovani nacteni init neni spolehlive
 
     // Reads file name
     //-----------------------------------------------------------
@@ -73,12 +73,12 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         return 1;
     }
 
-    // Reads sha
+    // Reads received_md5
     //-----------------------------------------------------------
-    char *sha;
-    strip_res = strip_data(&buff_ptr, (char *) HASH, &sha);
+    char *received_md5;
+    strip_res = strip_data(&buff_ptr, (char *) HASH, &received_md5);
     if (strip_res != 0) {
-        fprintf(stderr, "Error: cannot read SHA\n");
+        fprintf(stderr, "Error: cannot read MD5\n");
         return 1;
     }
 
@@ -103,16 +103,19 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     // Checks CRC
     //-----------------------------------------------------------
     FILE *output;
+    char test_md5[33];
     if (my_crc == init_crc) {
         printf("Init CRCs are equal!\n");
 
-        output = fopen("output.txt", "wb");
+        output = fopen("output.png", "wb");
         printf("File name: %s\n", fname);
 
         integer_fsize = convert_c_str_to_int(fsize);
         printf("File size: %d\n", integer_fsize);
 
-        printf("SHA: %s\n", sha);
+        printf("MD5: %s\n", received_md5);
+
+        strcpy(test_md5, received_md5);
 
         sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
     } else {
@@ -120,6 +123,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
         printf("Init CRCs are not equal! - packet not accepted\n");
         goto read_init_packet_again;
     }
+    char *stored_fname = new char[strlen(fname)];
+    strcpy(stored_fname, fname);
 
     // Recieves START flag
     // -----------------------------------------------------------------
@@ -222,7 +227,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
                 continue;
             }
             counter++;
-            printf("Packet number: %i\n", packet_num);
+            //printf("Packet number: %i\n", packet_num);
 
             write_file(buffer_rx, packet_size, output);
 
@@ -235,24 +240,26 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         integer_fsize -= real_data_size;
     }
+
     fclose(output);
     closesocket(socketS);
 
     // FIXME
-    /*
-    MD5 md5;
-    char *hashed = md5.digestFile("output.txt");
-    sha[sizeof(sha)] = '\0';
-    printf("Hashed file: %s\n", hashed);
-    printf("SHA: %s %i\n", sha, sizeof(sha));
-    if (strcmp(hashed, sha) == 0){
+    MD5 my_md5;
+    char *hashed = my_md5.digestFile("output.png");
+    //received_md5[sizeof(received_md5)] = '\0';
+    //printf("Computed MD5: %s\n", hashed);
+    //printf("Received MD5: %s \n", received_md5);
+    printf("File name: %s\n", fname);
+    printf("Stored file name: %s\n", stored_fname);
+    int res = strcmp(test_md5, hashed);
+    if (res == 0){
         printf("Huraa, soubory jsou stejne.\n");
     } else {
-        printf("Files are not the same. %i\n", strcmp(hashed, sha));
-        printf( "%s\n", hashed);
-        printf("%s\n", sha);
+        printf("Files are not the same. %i\n", strcmp(hashed, received_md5));
+        printf("Computed MD5: %s\n", hashed);
+        printf("Received MD5: %s \n", test_md5);
     }
-    */
 
     return 0;
 }
@@ -264,6 +271,9 @@ int strip_data(char **buff_ptr, char *tag, char **data) {
         *data = strtok(*buff_ptr, "{");
         *data = strtok(nullptr, "}");
         *buff_ptr = strtok(nullptr, "");
+        char str_end[1];
+        str_end[0] = '\0';
+        strcat(*data, str_end);
     } else {
         fprintf(stderr, "Error: invalid tag!\n");
         ret = 1;
