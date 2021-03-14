@@ -33,11 +33,16 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
     char buffer_rx[BUFFERS_LEN];
 
+
+
+    read_init_packet_again:
+    printf("Waiting for init info...\n");
     //-----------------------------------------------------------
     clear_buffer(buffer_rx, BUFFERS_LEN);
     //printf("Waiting for init info...\n");
-    int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
 
+
+    int rec_init_info = recvfrom(socketS, buffer_rx, sizeof(buffer_rx), 0, (struct sockaddr *) &from, &from_len);
     addrDest.sin_addr.s_addr = from.sin_addr.S_un.S_addr;
 
     if (rec_init_info == SOCKET_ERROR) {
@@ -50,8 +55,8 @@ int receive_file(char *target_ip, int target_port, int local_port) {
     strcpy(copy_for_crc, buffer_rx);
 
     // Goto flag to read init packet again in case of CRC comparison failure
-    read_init_packet_again:
-    printf("Waiting for init info...\n");
+
+
     // FIXME chovani nacteni init neni spolehlive
 
     // Reads file name
@@ -170,6 +175,7 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
         if (strncmp(buffer_rx, STOP, sizeof(STOP) - 1) == 0) {
             printf("Stop flag received!\n");
+            sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
             break;
         }
 
@@ -230,13 +236,14 @@ int receive_file(char *target_ip, int target_port, int local_port) {
 
             // Check for correct packet
             if (packet_num < counter) {
+                sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
                 continue;
             }
             counter++;
 
             write_file(buffer_rx, packet_size, output);
 
-            sendto(socketS, ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
+            sendto(socketS, ACK, strlen(ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
         } else {
             sendto(socketS, NOT_ACK, strlen(NOT_ACK), 0, (sockaddr *) &addrDest, sizeof(addrDest));
             printf("CRCs are not equal! - packet not accepted\n");
